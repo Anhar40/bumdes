@@ -622,7 +622,7 @@ app.put('/api/admin/loans/:id/status', authenticateToken, isAdmin, async (req, r
                 body: status === 'approved' 
                     ? `Halo ${nama}, pinjaman Rp ${Number(jumlah_pinjaman).toLocaleString('id-ID')} telah cair ke saldo Anda.`
                     : `Mohon maaf ${nama}, pengajuan pinjaman Anda belum dapat disetujui. Cek catatan admin.`,
-                url: "/tagihan.html" // Arahkan warga ke halaman riwayat/tagihan
+                url: "/user/tagihan.html" // Arahkan warga ke halaman riwayat/tagihan
             });
 
             // Kirim secara asynchronous (tidak perlu ditunggu/await jika tidak ingin menghambat response)
