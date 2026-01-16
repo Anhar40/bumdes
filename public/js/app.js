@@ -1,12 +1,15 @@
+// Registrasi Service Worker
 if ("serviceWorker" in navigator && "PushManager" in window) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/sw.js")
-      .then(() => console.log("✅ PWA aktif"))
-      .catch(err => console.error("❌ SW gagal", err));
-  });
+    window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/sw.js")
+            .then(() => {
+                console.log("✅ PWA aktif");
+                checkNotificationStatus(); // Cek apakah perlu munculkan banner
+            })
+            .catch(err => console.error("❌ SW gagal", err));
+    });
 }
 
-// Fungsi pembantu untuk konversi kunci VAPID (WAJIB ADA)
 function urlBase64ToUint8Array(base64String) {
     const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
     const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
@@ -18,32 +21,38 @@ function urlBase64ToUint8Array(base64String) {
     return outputArray;
 }
 
-// 1. Fungsi Minta Izin (Dipanggil otomatis)
-async function requestNotificationPermission() {
-    // Cek dukungan browser
-    if (!("Notification" in window) || !("serviceWorker" in navigator)) {
-        return; 
+// Fungsi mengecek status notifikasi saat halaman dimuat
+async function checkNotificationStatus() {
+    const banner = document.getElementById('notif-banner');
+    
+    // Jika user belum pernah memilih (default), munculkan banner
+    if (Notification.permission === "default") {
+        banner.classList.remove('hidden');
+    } 
+    // Jika sudah diizinkan, pastikan subscription di server tetap sinkron
+    else if (Notification.permission === "granted") {
+        subscribeUser();
     }
+}
+
+async function requestNotificationPermission() {
+    if (!("Notification" in window)) return;
 
     try {
-        // Jika sudah pernah diizinkan, langsung subscribe saja
-        if (Notification.permission === "granted") {
-            await subscribeUser();
-            return;
-        }
-
-        // Jika belum, minta izin
         const permission = await Notification.requestPermission();
         if (permission === "granted") {
-            console.log("✅ Izin diberikan!");
+            document.getElementById('notif-banner').classList.add('hidden');
             await subscribeUser();
+            alert("✅ Notifikasi berhasil diaktifkan!");
+        } else {
+            document.getElementById('notif-banner').classList.add('hidden');
+            console.warn("❌ Izin notifikasi ditolak oleh user.");
         }
     } catch (error) {
         console.error("Error notifikasi:", error);
     }
 }
 
-// 2. Fungsi Subscribe
 async function subscribeUser() {
     try {
         const registration = await navigator.serviceWorker.ready;
@@ -67,7 +76,7 @@ async function subscribeUser() {
             body: JSON.stringify(subscription)
         });
 
-        console.log("✅ Push Notification Aktif");
+        console.log("✅ Push Notification Terdaftar di Server");
     } catch (err) {
         console.error("❌ Gagal subscribe:", err);
     }

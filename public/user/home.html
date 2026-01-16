@@ -77,6 +77,23 @@
         </div>
     </header>
 
+    <div id="notif-banner"
+        class="hidden bg-amber-50 border border-amber-200 p-4 rounded-2xl mt-4 flex justify-between items-center shadow-sm">
+        <div class="flex items-center gap-3">
+            <div class="bg-amber-100 p-2 rounded-full">
+                <i class="fas fa-bell text-amber-600"></i>
+            </div>
+            <div>
+                <p class="text-xs text-amber-900 font-bold leading-none mb-1">Aktifkan Notifikasi</p>
+                <p class="text-[10px] text-amber-700">Dapatkan info saldo & status pesanan langsung di HP.</p>
+            </div>
+        </div>
+        <button id="btn-notif" onclick="requestNotificationPermission()"
+            class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-xl text-[10px] font-bold transition-colors">
+            Aktifkan
+        </button>
+    </div>
+
     <main class="max-w-6xl mx-auto px-4 pb-20">
 
         <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-12">
@@ -280,16 +297,6 @@
                 <i class="fas fa-sign-out-alt"></i> Keluar dari Akun
             </button>
         </div>
-    </div>
-
-    <div id="notif-banner"
-        class=" bg-amber-50 border border-amber-200 p-3 rounded-2xl mt-4 flex justify-between items-center">
-        <div class="flex items-center gap-3">
-            <i class="fas fa-bell text-amber-600"></i>
-            <p class="text-xs text-amber-800 font-medium">Aktifkan notifikasi untuk info pesanan?</p>
-        </div>
-        <button id="btn-notif" onclick="requestNotificationPermission()"
-            class="bg-amber-600 text-white px-4 py-1.5 rounded-xl text-[10px] font-bold">Aktifkan</button>
     </div>
 
     <script src="/js/app.js"></script>

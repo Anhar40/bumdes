@@ -80,15 +80,15 @@ webPush.setVapidDetails(
 
 // SIMPAN SUBSCRIPTION (CONTOH SEDERHANA)
 app.post("/api/subscribe", authenticateToken, async (req, res) => {
-  const subscription = req.body;
+  const subscription = req.body; // Ini adalah objek JSON dari browser
   const userId = req.user.id;
 
   if (!subscription || !subscription.endpoint) {
     return res.status(400).json({ message: "Subscription tidak valid" });
   }
 
-  // PostgreSQL menggunakan $1, $2 bukan ?
-  // Data subscription (objek) bisa langsung dimasukkan tanpa JSON.stringify
+  // Menggunakan PostgreSQL ($1, $2)
+  // Kolom push_subscription di database sebaiknya bertipe JSONB
   const sql = `
     UPDATE users 
     SET push_subscription = $1 
@@ -96,11 +96,11 @@ app.post("/api/subscribe", authenticateToken, async (req, res) => {
   `;
 
   try {
-    await db.query(sql, [subscription, userId]);
-    res.json({ success: true });
+    await db.query(sql, [JSON.stringify(subscription), userId]);
+    res.json({ success: true, message: "Subscription berhasil disimpan" });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: err.message });
+    console.error("DB Error:", err);
+    res.status(500).json({ error: "Gagal menyimpan subscription" });
   }
 });
 
