@@ -17,7 +17,7 @@ const snap = new midtransClient.Snap({
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const SECRET_KEY = 'BUMDES_SUPER_SECRET_2026';
+const SECRET_KEY = process.env.SECRET_KEY;
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
@@ -64,15 +64,53 @@ const authenticateToken = (req, res, next) => {
 
 // Register Warga
 app.post('/api/register', upload.single('ktp'), async (req, res) => {
-    const { nik, nama, email, password, alamat, no_hp } = req.body;
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const foto_ktp = req.file ? req.file.filename : null;
+    try {
+        const { nik, nama, email, password, alamat, no_hp } = req.body;
+        let fotoKtpBase64 = null;
 
-    const sql = `INSERT INTO users (nik, nama, email, password, alamat, no_hp, foto_ktp) VALUES (?, ?, ?, ?, ?, ?, ?)`;
-    db.query(sql, [nik, nama, email, hashedPassword, alamat, no_hp, foto_ktp], (err, result) => {
-        if (err) return res.status(500).json({ error: err.message });
-        res.status(201).json({ message: 'Registrasi berhasil, menunggu verifikasi' });
-    });
+        // 1. Hash Password
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // 2. Proses Gambar KTP (Jika ada)
+        if (req.file) {
+            // Validasi format file
+            if (!req.file.mimetype.startsWith('image/')) {
+                return res.status(400).json({ error: "File KTP harus berupa gambar!" });
+            }
+
+            // Kompresi dengan Sharp
+            const compressedBuffer = await sharp(req.file.buffer)
+                .resize(1000, 1000, { fit: 'inside', withoutEnlargement: true }) // Ukuran sedikit lebih besar untuk KTP agar teks terbaca
+                .jpeg({ quality: 80 }) // Kualitas 80%
+                .toBuffer();
+
+            // Konversi ke Base64 string
+            fotoKtpBase64 = `data:image/jpeg;base64,${compressedBuffer.toString('base64')}`;
+        }
+
+        // 3. Simpan ke Database
+        const sql = `INSERT INTO users (nik, nama, email, password, alamat, no_hp, foto_ktp) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+        
+        db.query(sql, [nik, nama, email, hashedPassword, alamat, no_hp, fotoKtpBase64], (err, result) => {
+            if (err) {
+                console.error("Database Error:", err);
+                // Cek jika NIK atau Email duplikat
+                if (err.code === 'ER_DUP_ENTRY') {
+                    return res.status(400).json({ error: "NIK atau Email sudah terdaftar" });
+                }
+                return res.status(500).json({ error: "Gagal menyimpan data registrasi" });
+            }
+            
+            res.status(201).json({ 
+                message: 'Registrasi berhasil, menunggu verifikasi',
+                image_size: fotoKtpBase64 ? `${(fotoKtpBase64.length / 1024).toFixed(2)} KB` : 'No Image'
+            });
+        });
+
+    } catch (error) {
+        console.error("System Error:", error);
+        res.status(500).json({ error: "Terjadi kesalahan sistem saat registrasi" });
+    }
 });
 
 // Login (Warga & Admin)
