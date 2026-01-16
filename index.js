@@ -1,7 +1,7 @@
 require('dotenv').config();
 
 const express = require('express');
-const mysql = require('mysql2');
+const { Pool } = require('pg');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const multer = require('multer');
@@ -29,27 +29,23 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
 }));
 // Gunakan createPool, bukan createConnection
-const db = mysql.createPool({
-    host: process.env.DB_HOST,
-    port: process.env.DB_PORT,
-    user: process.env.DB_USERNAME,
+const db = new Pool({
+    host: process.env.DB_HOST,      // Ambil dari Supabase > Settings > Database
+    port: process.env.DB_PORT,      // Biasanya 5432 atau 6543
+    user: process.env.DB_USERNAME,  // Biasanya 'postgres'
     password: process.env.DB_PASSWORD,
-    database: process.env.DB_DATABASE,
-    waitForConnections: true,
-    connectionLimit: 20, // Maksimal 10-20 koneksi simultan
-    queueLimit: 0
+    database: process.env.DB_DATABASE, // Biasanya 'postgres'
+    ssl: {
+        rejectUnauthorized: false // Supabase WAJIB pakai SSL
+    }
 });
 
-// Karena pool menangani koneksi secara otomatis, 
-// Anda tidak perlu memanggil db.connect() secara manual.
-// Jika ingin mengecek koneksi di awal:
-db.getConnection((err, connection) => {
+db.connect((err, client, release) => {
     if (err) {
-        console.error('Gagal koneksi database:', err.message);
-        return;
+        return console.error('Gagal koneksi ke Supabase (Postgres):', err.stack);
     }
-    console.log('Terhubung ke Database MySQL (via Pool)');
-    connection.release(); // Kembalikan koneksi ke pool
+    console.log('✅ Terhubung ke Supabase via PostgreSQL Pool');
+    release();
 });
 
 // --- KONFIGURASI UPLOAD ---
