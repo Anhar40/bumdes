@@ -281,31 +281,39 @@
             </button>
         </div>
     </div>
-    <script src="/js/app.js"></script>
-
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
-
+        // 1. Inisialisasi & Registrasi SW
         AOS.init();
-        const token = localStorage.getItem('token');
 
-        // 1. Validasi Akses
+        if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.register("/sw.js")
+                .then(() => console.log("✅ SW Aktif"))
+                .catch(err => console.error("❌ SW Gagal", err));
+        }
+
+        const token = localStorage.getItem('token');
         if (!token) window.location.href = '/login.html';
 
-        // 2. Ambil Profil User (Nama, Saldo, Status Verifikasi)
+        // 2. Jalankan Fungsi Utama setelah DOM Siap
+        window.addEventListener('DOMContentLoaded', () => {
+            fetchUserData();
+            requestNotificationPermission(); // Otomatis minta izin
+            fetchProducts();
+            updateCartCount();
+        });
+
+        // --- FUNGSI PROFIL & PRODUK ---
         async function fetchUserData() {
             try {
                 const response = await fetch('/api/profile', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const user = await response.json();
-
-                // Update UI Profil & Saldo
                 document.getElementById('user-name-display').innerText = user.nama;
                 document.getElementById('welcome-name').innerText = user.nama;
                 document.getElementById('user-saldo').innerText = `Rp ${Number(user.saldo).toLocaleString('id-ID')}`;
 
-                // Update UI Badge Verifikasi
                 const badge = document.getElementById('status-badge');
                 if (user.status_verifikasi === 'verified') {
                     badge.className = 'inline-flex items-center gap-2 bg-white text-emerald-700 px-4 py-2 rounded-full font-bold text-[10px]';
@@ -318,104 +326,12 @@
                     badge.innerHTML = '<i class="fas fa-exclamation-triangle"></i> BELUM VERIFIKASI';
                 }
             } catch (error) {
-                console.error('Gagal mengambil data profil:', error);
-                logout(); // Logout jika token tidak valid
+                console.error('Gagal profil:', error);
+                logout();
             }
         }
 
-        // 3. Ambil Produk dari API
-        async function fetchProducts() {
-            try {
-                const response = await fetch('/api/products');
-                const products = await response.json();
-
-                const container = document.getElementById('product-list');
-                container.innerHTML = products.map(p => `
-                    <div class="bg-white p-4 rounded-3xl shadow-sm border border-gray-100 hover:shadow-xl transition-all group" data-aos="fade-up">
-                        <div class="relative overflow-hidden rounded-2xl mb-4">
-                            <img src="${p.foto_produk ? '/uploads/' + p.foto_produk : 'https://via.placeholder.com/300x200'}" class="w-full h-48 object-cover group-hover:scale-110 transition duration-500">
-                            <span class="absolute top-3 left-3 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-[10px] font-bold text-emerald-700 uppercase">${p.kategori || 'Produk'}</span>
-                        </div>
-                        <h3 class="font-bold text-gray-800 mb-1">${p.nama_produk}</h3>
-                        <p class="text-xs text-gray-500 mb-4 line-clamp-2">${p.deskripsi || ''}</p>
-                        <div class="flex justify-between items-center">
-                            <span class="text-lg font-bold text-emerald-600">Rp ${Number(p.harga).toLocaleString('id-ID')}</span>
-                            <button onclick="addToCart(${p.id}, '${p.nama_produk}', ${p.harga}, '${p.foto_produk}')" class="bg-gray-900 text-white w-10 h-10 rounded-xl flex items-center justify-center hover:bg-emerald-600 transition">
-                                <i class="fas fa-shopping-cart text-sm"></i>
-                            </button>
-                        </div>
-                    </div>
-                `).join('');
-            } catch (error) {
-                console.error('Gagal memuat produk:', error);
-            }
-        }
-
-        // 4. Sistem Keranjang
-        // PASTIKAN FUNGSI INI SEPERTI INI DI HALAMAN BERANDA
-        function addToCart(id, name, price, img) {
-            let cart = JSON.parse(localStorage.getItem('cart')) || [];
-
-            // Pastikan ID dikonversi ke Number agar konsisten
-            const productId = Number(id);
-            const index = cart.findIndex(item => Number(item.id) === productId);
-
-            if (index > -1) {
-                cart[index].qty += 1;
-            } else {
-                // BAGIAN PENTING: Sertakan 'id' di sini!
-                cart.push({
-                    id: productId,
-                    nama_produk: name,
-                    harga: Number(price),
-                    qty: 1,
-                    foto_produk: img
-                });
-            }
-
-            localStorage.setItem('cart', JSON.stringify(cart));
-            updateCartCount();
-            alert(`✅ ${name} masuk keranjang!`);
-        }
-
-        function updateCartCount() {
-            const cart = JSON.parse(localStorage.getItem('cart')) || [];
-            const total = cart.reduce((sum, item) => sum + item.qty, 0);
-            document.getElementById('cart-count').innerText = total;
-        }
-
-        function logout() {
-            localStorage.clear();
-            window.location.href = '/login.html';
-        }
-        function toggleMenu() {
-            const modal = document.getElementById('mobile-menu-modal');
-            const content = document.getElementById('modal-content');
-
-            if (modal.classList.contains('hidden')) {
-                // Buka Modal
-                modal.classList.remove('hidden');
-                setTimeout(() => {
-                    content.classList.remove('translate-y-full');
-                }, 10);
-                document.body.style.overflow = 'hidden'; // Lock scroll body
-            } else {
-                // Tutup Modal
-                content.classList.add('translate-y-full');
-                setTimeout(() => {
-                    modal.classList.add('hidden');
-                }, 300);
-                document.body.style.overflow = 'auto'; // Unlock scroll body
-            }
-        }
-
-        // Tutup modal jika user mengklik bagian luar modal (backdrop)
-        document.getElementById('mobile-menu-modal').addEventListener('click', function (e) {
-            if (e.target === this.firstElementChild) {
-                toggleMenu();
-
-            }
-        });
+        // --- FUNGSI NOTIFIKASI ---
         function urlBase64ToUint8Array(base64String) {
             const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
             const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
@@ -427,32 +343,20 @@
             return outputArray;
         }
 
-        // 1. Fungsi Minta Izin (Dipanggil otomatis)
         async function requestNotificationPermission() {
-            // Cek dukungan browser
-            if (!("Notification" in window) || !("serviceWorker" in navigator)) {
-                return;
-            }
-
+            if (!("Notification" in window) || !("serviceWorker" in navigator)) return;
             try {
-                // Jika sudah pernah diizinkan, langsung subscribe saja
                 if (Notification.permission === "granted") {
                     await subscribeUser();
                     return;
                 }
-
-                // Jika belum, minta izin
                 const permission = await Notification.requestPermission();
-                if (permission === "granted") {
-                    console.log("✅ Izin diberikan!");
-                    await subscribeUser();
-                }
+                if (permission === "granted") await subscribeUser();
             } catch (error) {
                 console.error("Error notifikasi:", error);
             }
         }
 
-        // 2. Fungsi Subscribe
         async function subscribeUser() {
             try {
                 const registration = await navigator.serviceWorker.ready;
@@ -466,7 +370,6 @@
                     });
                 }
 
-                const token = localStorage.getItem('token');
                 await fetch("/api/subscribe", {
                     method: "POST",
                     headers: {
@@ -475,18 +378,69 @@
                     },
                     body: JSON.stringify(subscription)
                 });
-
-                console.log("✅ Push Notification Aktif");
+                console.log("✅ Push Active");
             } catch (err) {
-                console.error("❌ Gagal subscribe:", err);
+                console.error("❌ Subscribe failed:", err);
             }
         }
 
-        fetchUserData();
-        requestNotificationPermission();
-        fetchProducts();
-        updateCartCount();
+        // --- FUNGSI LAINNYA (Produk, Cart, Menu) ---
+        async function fetchProducts() {
+            try {
+                const response = await fetch('/api/products');
+                const products = await response.json();
+                const container = document.getElementById('product-list');
+                container.innerHTML = products.map(p => `
+                <div class="bg-white p-4 rounded-3xl shadow-sm border border-gray-100 hover:shadow-xl transition-all group" data-aos="fade-up">
+                    <div class="relative overflow-hidden rounded-2xl mb-4">
+                        <img src="${p.foto_produk ? '/uploads/' + p.foto_produk : 'https://via.placeholder.com/300x200'}" class="w-full h-48 object-cover group-hover:scale-110 transition duration-500">
+                    </div>
+                    <h3 class="font-bold text-gray-800 mb-1">${p.nama_produk}</h3>
+                    <div class="flex justify-between items-center">
+                        <span class="text-lg font-bold text-emerald-600">Rp ${Number(p.harga).toLocaleString('id-ID')}</span>
+                        <button onclick="addToCart(${p.id}, '${p.nama_produk}', ${p.harga}, '${p.foto_produk}')" class="bg-gray-900 text-white w-10 h-10 rounded-xl flex items-center justify-center hover:bg-emerald-600 transition">
+                            <i class="fas fa-shopping-cart text-sm"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+            } catch (e) { console.error(e); }
+        }
 
+        function addToCart(id, name, price, img) {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const productId = Number(id);
+            const index = cart.findIndex(item => Number(item.id) === productId);
+            if (index > -1) { cart[index].qty += 1; }
+            else { cart.push({ id: productId, nama_produk: name, harga: Number(price), qty: 1, foto_produk: img }); }
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartCount();
+            alert(`✅ ${name} masuk keranjang!`);
+        }
+
+        function updateCartCount() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            document.getElementById('cart-count').innerText = cart.reduce((sum, item) => sum + item.qty, 0);
+        }
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = '/login.html';
+        }
+
+        function toggleMenu() {
+            const modal = document.getElementById('mobile-menu-modal');
+            const content = document.getElementById('modal-content');
+            if (modal.classList.contains('hidden')) {
+                modal.classList.remove('hidden');
+                setTimeout(() => content.classList.remove('translate-y-full'), 10);
+                document.body.style.overflow = 'hidden';
+            } else {
+                content.classList.add('translate-y-full');
+                setTimeout(() => modal.classList.add('hidden'), 300);
+                document.body.style.overflow = 'auto';
+            }
+        }
     </script>
 </body>
 
