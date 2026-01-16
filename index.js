@@ -22,20 +22,28 @@ const SECRET_KEY = process.env.SECRET_KEY;
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
-const db = mysql.createConnection({
+// Gunakan createPool, bukan createConnection
+const db = mysql.createPool({
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
-    user: process.env.DB_USERNAME,  
-    password: process.env.DB_PASSWORD,   
-    database: process.env.DB_DATABASE
+    user: process.env.DB_USERNAME,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_DATABASE,
+    waitForConnections: true,
+    connectionLimit: 50, // Maksimal 10-20 koneksi simultan
+    queueLimit: 0
 });
 
-db.connect((err) => {
+// Karena pool menangani koneksi secara otomatis, 
+// Anda tidak perlu memanggil db.connect() secara manual.
+// Jika ingin mengecek koneksi di awal:
+db.getConnection((err, connection) => {
     if (err) {
         console.error('Gagal koneksi database:', err.message);
         return;
     }
-    console.log('Terhubung ke Database MySQL BUMDes');
+    console.log('Terhubung ke Database MySQL (via Pool)');
+    connection.release(); // Kembalikan koneksi ke pool
 });
 
 // --- KONFIGURASI UPLOAD ---
