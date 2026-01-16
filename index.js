@@ -17,7 +17,7 @@ const snap = new midtransClient.Snap({
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const SECRET_KEY = process.env.SECRET_KEY;
+const SECRET_KEY = 'BUMDES_SUPER_SECRET_2026';
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
