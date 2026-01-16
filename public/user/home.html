@@ -416,13 +416,10 @@
             }
         });
 
-        // Inisialisasi awal
-        if (typeof requestNotificationPermission === 'function') {
-            requestNotificationPermission();
-        }
         fetchUserData();
         fetchProducts();
         updateCartCount();
+        requestNotificationPermission();
     </script>
 </body>
 
