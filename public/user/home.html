@@ -283,202 +283,155 @@
     </div>
 
     <div id="notif-banner"
-        class="hidden bg-amber-50 border border-amber-200 p-3 rounded-2xl mt-4 flex justify-between items-center">
+        class=" bg-amber-50 border border-amber-200 p-3 rounded-2xl mt-4 flex justify-between items-center">
         <div class="flex items-center gap-3">
             <i class="fas fa-bell text-amber-600"></i>
             <p class="text-xs text-amber-800 font-medium">Aktifkan notifikasi untuk info pesanan?</p>
         </div>
-        <button onclick="requestNotificationPermission()"
+        <button id="btn-notif" onclick="requestNotificationPermission()"
             class="bg-amber-600 text-white px-4 py-1.5 rounded-xl text-[10px] font-bold">Aktifkan</button>
     </div>
 
+    <script src="/js/app.js"></script>
+
+
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-<script>
-    AOS.init();
-    const token = localStorage.getItem('token');
-    const PUBLIC_VAPID_KEY = "BLYIbLCIlu-yCl9f4gRB2RtuslOCtj78DLUXFsMdrA_SrriX2DYBTX3ew_VlpY4n3ZS1PcQTuA9FVRuQKwuITo0";
+    <script>
+        AOS.init();
+        const token = localStorage.getItem('token');
 
-    // 1. VALIDASI AKSES
-    if (!token) window.location.href = '/login.html';
+        // 1. Validasi Akses
+        if (!token) window.location.href = '/login.html';
 
-    // 2. HELPER: Konversi VAPID Key
-    function urlBase64ToUint8Array(base64String) {
-        const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
-        const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
-        const rawData = window.atob(base64);
-        const outputArray = new Uint8Array(rawData.length);
-        for (let i = 0; i < rawData.length; ++i) {
-            outputArray[i] = rawData.charCodeAt(i);
+        // 2. Ambil Profil User (Nama, Saldo, Status Verifikasi)
+        async function fetchUserData() {
+            try {
+                const response = await fetch('/api/profile', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const user = await response.json();
+
+                // Update UI Profil & Saldo
+                document.getElementById('user-name-display').innerText = user.nama;
+                document.getElementById('welcome-name').innerText = user.nama;
+                document.getElementById('user-saldo').innerText = `Rp ${Number(user.saldo).toLocaleString('id-ID')}`;
+
+                // Update UI Badge Verifikasi
+                const badge = document.getElementById('status-badge');
+                if (user.status_verifikasi === 'verified') {
+                    badge.className = 'inline-flex items-center gap-2 bg-white text-emerald-700 px-4 py-2 rounded-full font-bold text-[10px]';
+                    badge.innerHTML = '<i class="fas fa-check-circle"></i> AKUN TERVERIFIKASI';
+                } else if (user.status_verifikasi === 'pending') {
+                    badge.className = 'inline-flex items-center gap-2 bg-amber-100 text-amber-700 px-4 py-2 rounded-full font-bold text-[10px]';
+                    badge.innerHTML = '<i class="fas fa-clock"></i> VERIFIKASI DIPROSES';
+                } else {
+                    badge.className = 'inline-flex items-center gap-2 bg-red-100 text-red-700 px-4 py-2 rounded-full font-bold text-[10px]';
+                    badge.innerHTML = '<i class="fas fa-exclamation-triangle"></i> BELUM VERIFIKASI';
+                }
+            } catch (error) {
+                console.error('Gagal mengambil data profil:', error);
+                logout(); // Logout jika token tidak valid
+            }
         }
-        return outputArray;
-    }
 
-    // 3. FUNGSI NOTIFIKASI (Optimasi UI/UX)
-    async function initNotificationSystem() {
-        if (!("Notification" in window) || !("serviceWorker" in navigator)) return;
+        // 3. Ambil Produk dari API
+        async function fetchProducts() {
+            try {
+                const response = await fetch('/api/products');
+                const products = await response.json();
 
-        // Jika sudah diizinkan sebelumnya, langsung perbarui langganan di backend
-        if (Notification.permission === "granted") {
-            await subscribeUser();
-        } 
-        // Jika belum pernah ditanya, tampilkan banner ajakan (opsional tapi disarankan)
-        else if (Notification.permission === "default") {
-            showNotifBanner();
+                const container = document.getElementById('product-list');
+                container.innerHTML = products.map(p => `
+                    <div class="bg-white p-4 rounded-3xl shadow-sm border border-gray-100 hover:shadow-xl transition-all group" data-aos="fade-up">
+                        <div class="relative overflow-hidden rounded-2xl mb-4">
+                            <img src="${p.foto_produk ? '/uploads/' + p.foto_produk : 'https://via.placeholder.com/300x200'}" class="w-full h-48 object-cover group-hover:scale-110 transition duration-500">
+                            <span class="absolute top-3 left-3 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-[10px] font-bold text-emerald-700 uppercase">${p.kategori || 'Produk'}</span>
+                        </div>
+                        <h3 class="font-bold text-gray-800 mb-1">${p.nama_produk}</h3>
+                        <p class="text-xs text-gray-500 mb-4 line-clamp-2">${p.deskripsi || ''}</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-lg font-bold text-emerald-600">Rp ${Number(p.harga).toLocaleString('id-ID')}</span>
+                            <button onclick="addToCart(${p.id}, '${p.nama_produk}', ${p.harga}, '${p.foto_produk}')" class="bg-gray-900 text-white w-10 h-10 rounded-xl flex items-center justify-center hover:bg-emerald-600 transition">
+                                <i class="fas fa-shopping-cart text-sm"></i>
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Gagal memuat produk:', error);
+            }
         }
-    }
 
-    function showNotifBanner() {
-        // Membuat banner ajakan secara dinamis agar tidak mengganggu layout
-        const banner = document.createElement('div');
-        banner.id = "notif-prompt";
-        banner.className = "fixed top-24 left-4 right-4 z-[100] bg-white border-l-4 border-emerald-500 shadow-xl p-4 rounded-xl flex justify-between items-center animate-bounce";
-        banner.innerHTML = `
-            <div class="flex items-center gap-3">
-                <i class="fas fa-bell text-emerald-600"></i>
-                <p class="text-xs font-bold text-gray-700">Aktifkan notifikasi info saldo & pesanan?</p>
-            </div>
-            <div class="flex gap-2">
-                <button onclick="requestPermission()" class="bg-emerald-600 text-white px-3 py-1.5 rounded-lg text-[10px] font-black">AKTIFKAN</button>
-                <button onclick="this.parentElement.parentElement.remove()" class="text-gray-400 text-xs px-2">Nanti</button>
-            </div>
-        `;
-        document.body.appendChild(banner);
-    }
+        // 4. Sistem Keranjang
+        // PASTIKAN FUNGSI INI SEPERTI INI DI HALAMAN BERANDA
+        function addToCart(id, name, price, img) {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
-    async function requestPermission() {
-        const permission = await Notification.requestPermission();
-        if (permission === "granted") {
-            const banner = document.getElementById('notif-prompt');
-            if(banner) banner.remove();
-            await subscribeUser();
-            alert("✅ Notifikasi berhasil diaktifkan!");
-        }
-    }
+            // Pastikan ID dikonversi ke Number agar konsisten
+            const productId = Number(id);
+            const index = cart.findIndex(item => Number(item.id) === productId);
 
-    async function subscribeUser() {
-        try {
-            const registration = await navigator.serviceWorker.ready;
-            
-            // Cek apakah sudah ada subscription
-            let subscription = await registration.pushManager.getSubscription();
-
-            // Jika belum ada, buat baru
-            if (!subscription) {
-                subscription = await registration.pushManager.subscribe({
-                    userVisibleOnly: true,
-                    applicationServerKey: urlBase64ToUint8Array(PUBLIC_VAPID_KEY)
+            if (index > -1) {
+                cart[index].qty += 1;
+            } else {
+                // BAGIAN PENTING: Sertakan 'id' di sini!
+                cart.push({
+                    id: productId,
+                    nama_produk: name,
+                    harga: Number(price),
+                    qty: 1,
+                    foto_produk: img
                 });
             }
 
-            // Kirim ke backend
-            await fetch("/api/subscribe", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                },
-                body: JSON.stringify(subscription)
-            });
-            console.log("Push Registered");
-        } catch (err) {
-            console.error("Gagal subscribe push:", err);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartCount();
+            alert(`✅ ${name} masuk keranjang!`);
         }
-    }
 
-    // 4. DATA USER & PRODUK
-    async function fetchUserData() {
-        try {
-            const response = await fetch('/api/profile', {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            if (!response.ok) throw new Error("Unauthorized");
-            
-            const user = await response.json();
-            document.getElementById('user-name-display').innerText = user.nama;
-            document.getElementById('welcome-name').innerText = user.nama;
-            document.getElementById('user-saldo').innerText = `Rp ${Number(user.saldo).toLocaleString('id-ID')}`;
+        function updateCartCount() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const total = cart.reduce((sum, item) => sum + item.qty, 0);
+            document.getElementById('cart-count').innerText = total;
+        }
 
-            const badge = document.getElementById('status-badge');
-            if (user.status_verifikasi === 'verified') {
-                badge.className = 'inline-flex items-center gap-2 bg-white text-emerald-700 px-4 py-2 rounded-full font-bold text-[10px]';
-                badge.innerHTML = '<i class="fas fa-check-circle"></i> AKUN TERVERIFIKASI';
-            } else if (user.status_verifikasi === 'pending') {
-                badge.className = 'inline-flex items-center gap-2 bg-amber-100 text-amber-700 px-4 py-2 rounded-full font-bold text-[10px]';
-                badge.innerHTML = '<i class="fas fa-clock"></i> VERIFIKASI DIPROSES';
+        function logout() {
+            localStorage.clear();
+            window.location.href = '/login.html';
+        }
+        function toggleMenu() {
+            const modal = document.getElementById('mobile-menu-modal');
+            const content = document.getElementById('modal-content');
+
+            if (modal.classList.contains('hidden')) {
+                // Buka Modal
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    content.classList.remove('translate-y-full');
+                }, 10);
+                document.body.style.overflow = 'hidden'; // Lock scroll body
             } else {
-                badge.className = 'inline-flex items-center gap-2 bg-red-100 text-red-700 px-4 py-2 rounded-full font-bold text-[10px]';
-                badge.innerHTML = '<i class="fas fa-exclamation-triangle"></i> BELUM VERIFIKASI';
+                // Tutup Modal
+                content.classList.add('translate-y-full');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 300);
+                document.body.style.overflow = 'auto'; // Unlock scroll body
             }
-        } catch (error) {
-            logout();
         }
-    }
 
-    async function fetchProducts() {
-        try {
-            const response = await fetch('/api/products');
-            const products = await response.json();
-            const container = document.getElementById('product-list');
-            container.innerHTML = products.map(p => `
-                <div class="bg-white p-4 rounded-3xl shadow-sm border border-gray-100 hover:shadow-xl transition-all group" data-aos="fade-up">
-                    <div class="relative overflow-hidden rounded-2xl mb-4">
-                        <img src="${p.foto_produk || 'https://via.placeholder.com/300x200'}" class="w-full h-48 object-cover group-hover:scale-110 transition duration-500">
-                        <span class="absolute top-3 left-3 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-[10px] font-bold text-emerald-700 uppercase">${p.kategori || 'Produk'}</span>
-                    </div>
-                    <h3 class="font-bold text-gray-800 mb-1">${p.nama_produk}</h3>
-                    <div class="flex justify-between items-center mt-4">
-                        <span class="text-lg font-bold text-emerald-600">Rp ${Number(p.harga).toLocaleString('id-ID')}</span>
-                        <button onclick="addToCart(${p.id}, '${p.nama_produk}', ${p.harga}, '${p.foto_produk}')" class="bg-gray-900 text-white w-10 h-10 rounded-xl flex items-center justify-center hover:bg-emerald-600 transition">
-                            <i class="fas fa-shopping-cart text-sm"></i>
-                        </button>
-                    </div>
-                </div>
-            `).join('');
-        } catch (e) { console.error(e); }
-    }
+        // Tutup modal jika user mengklik bagian luar modal (backdrop)
+        document.getElementById('mobile-menu-modal').addEventListener('click', function (e) {
+            if (e.target === this.firstElementChild) {
+                toggleMenu();
+            }
+        });
 
-    // 5. KERANJANG & UI
-    function addToCart(id, name, price, img) {
-        let cart = JSON.parse(localStorage.getItem('cart')) || [];
-        const index = cart.findIndex(item => item.id === id);
-        if (index > -1) cart[index].qty += 1;
-        else cart.push({ id, nama_produk: name, harga: price, qty: 1, foto_produk: img });
-        
-        localStorage.setItem('cart', JSON.stringify(cart));
-        updateCartCount();
-        alert(`✅ ${name} ditambahkan!`);
-    }
-
-    function updateCartCount() {
-        const cart = JSON.parse(localStorage.getItem('cart')) || [];
-        document.getElementById('cart-count').innerText = cart.reduce((s, i) => s + i.qty, 0);
-    }
-
-    function toggleMenu() {
-        const modal = document.getElementById('mobile-menu-modal');
-        const content = document.getElementById('modal-content');
-        if (modal.classList.contains('hidden')) {
-            modal.classList.remove('hidden');
-            setTimeout(() => content.classList.remove('translate-y-full'), 10);
-        } else {
-            content.classList.add('translate-y-full');
-            setTimeout(() => modal.classList.add('hidden'), 300);
-        }
-    }
-
-    function logout() {
-        localStorage.clear();
-        window.location.href = '/login.html';
-    }
-
-    // RUN ON LOAD
-    window.addEventListener('load', () => {
+        // Inisialisasi awal
         fetchUserData();
         fetchProducts();
         updateCartCount();
-        initNotificationSystem();
-    });
-</script>
+    </script>
 </body>
 
 </html>

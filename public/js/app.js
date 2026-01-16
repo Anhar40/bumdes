@@ -1,6 +1,6 @@
 if ("serviceWorker" in navigator && "PushManager" in window) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/service-worker.js")
+    navigator.serviceWorker.register("/sw.js")
       .then(() => console.log("✅ PWA aktif"))
       .catch(err => console.error("❌ SW gagal", err));
   });
