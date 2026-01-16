@@ -81,42 +81,40 @@ app.post('/api/register', upload.single('ktp'), async (req, res) => {
 
         // 2. Proses Gambar KTP (Jika ada)
         if (req.file) {
-            // Validasi format file
             if (!req.file.mimetype.startsWith('image/')) {
                 return res.status(400).json({ error: "File KTP harus berupa gambar!" });
             }
 
-            // Kompresi dengan Sharp
             const compressedBuffer = await sharp(req.file.buffer)
-                .resize(1000, 1000, { fit: 'inside', withoutEnlargement: true }) // Ukuran sedikit lebih besar untuk KTP agar teks terbaca
-                .jpeg({ quality: 80 }) // Kualitas 80%
+                .resize(1000, 1000, { fit: 'inside', withoutEnlargement: true })
+                .jpeg({ quality: 80 })
                 .toBuffer();
 
-            // Konversi ke Base64 string
             fotoKtpBase64 = `data:image/jpeg;base64,${compressedBuffer.toString('base64')}`;
         }
 
-        // 3. Simpan ke Database
+        // 3. Simpan ke Database menggunakan Promise
         const sql = `INSERT INTO users (nik, nama, email, password, alamat, no_hp, foto_ktp) VALUES (?, ?, ?, ?, ?, ?, ?)`;
         
-        db.query(sql, [nik, nama, email, hashedPassword, alamat, no_hp, fotoKtpBase64], (err, result) => {
-            if (err) {
-                console.error("Database Error:", err);
-                // Cek jika NIK atau Email duplikat
-                if (err.code === 'ER_DUP_ENTRY') {
-                    return res.status(400).json({ error: "NIK atau Email sudah terdaftar" });
-                }
-                return res.status(500).json({ error: "Gagal menyimpan data registrasi" });
-            }
-            
-            res.status(201).json({ 
-                message: 'Registrasi berhasil, menunggu verifikasi',
-                image_size: fotoKtpBase64 ? `${(fotoKtpBase64.length / 1024).toFixed(2)} KB` : 'No Image'
-            });
+        // Menggunakan await db.promise().query
+        // Koneksi otomatis diambil dari pool dan dilepaskan kembali setelah selesai
+        await db.promise().query(sql, [nik, nama, email, hashedPassword, alamat, no_hp, fotoKtpBase64]);
+
+        // 4. Respon Berhasil
+        res.status(201).json({ 
+            message: 'Registrasi berhasil, menunggu verifikasi',
+            image_size: fotoKtpBase64 ? `${(fotoKtpBase64.length / 1024).toFixed(2)} KB` : 'No Image'
         });
 
     } catch (error) {
+        // Semua error (Bcrypt, Sharp, maupun Database) akan ditangkap di sini
         console.error("System Error:", error);
+
+        // Cek jika ini error duplikat dari database
+        if (error.code === 'ER_DUP_ENTRY') {
+            return res.status(400).json({ error: "NIK atau Email sudah terdaftar" });
+        }
+
         res.status(500).json({ error: "Terjadi kesalahan sistem saat registrasi" });
     }
 });
