@@ -5,6 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BUMDes Digital - Desa Mandiri</title>
+    <link rel="icon" href="/icons/logo_bumdesa.png" type="image/png">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#fefefe">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -83,8 +86,8 @@
                     <h3 class="text-2xl font-bold mb-3">Pasar Desa Digital</h3>
                     <p class="text-gray-600 mb-6">Wadahi produk UMKM lokal mulai dari kerajinan tangan hingga hasil tani
                         organik untuk pasar yang lebih luas.</p>
-                    <a href="/user/katalog.html" class="text-emerald-600 font-bold flex items-center gap-2">Jelajahi Produk <i
-                            class="fas fa-arrow-right"></i></a>
+                    <a href="/user/katalog.html" class="text-emerald-600 font-bold flex items-center gap-2">Jelajahi
+                        Produk <i class="fas fa-arrow-right"></i></a>
                 </div>
 
                 <div class="p-8 rounded-3xl bg-teal-50 border border-teal-100 hover:shadow-2xl transition duration-300 group"
@@ -96,8 +99,8 @@
                     <h3 class="text-2xl font-bold mb-3">Simpan Pinjam Syariah</h3>
                     <p class="text-gray-600 mb-6">Solusi permodalan bagi warga desa dengan proses yang mudah,
                         transparan, dan tanpa potongan administrasi yang rumit.</p>
-                    <a href="/user/pinjaman.html" class="text-teal-600 font-bold flex items-center gap-2">Ajukan Layanan <i
-                            class="fas fa-arrow-right"></i></a>
+                    <a href="/user/pinjaman.html" class="text-teal-600 font-bold flex items-center gap-2">Ajukan Layanan
+                        <i class="fas fa-arrow-right"></i></a>
                 </div>
             </div>
         </div>
@@ -164,24 +167,24 @@
         });
     </script>
     <script>
-    // Fungsi untuk mengambil data produk dari API
-    async function fetchProducts() {
-        try {
-            const response = await fetch('/api/products');
-            const products = await response.json();
-            
-            const container = document.getElementById('product-container');
-            
-            if (products.length === 0) {
-                container.innerHTML = `<p class="text-center col-span-full text-gray-500 py-10">Belum ada produk yang tersedia.</p>`;
-                return;
-            }
+        // Fungsi untuk mengambil data produk dari API
+        async function fetchProducts() {
+            try {
+                const response = await fetch('/api/products');
+                const products = await response.json();
 
-            container.innerHTML = products.map((p, index) => {
-                // Gunakan placeholder jika foto_produk kosong
-                const imagePath = p.foto_produk ? p.foto_produk : 'https://images.unsplash.com/photo-1583258292688-d0213dc5a3a8?auto=format&fit=crop&w=500';
-                
-                return `
+                const container = document.getElementById('product-container');
+
+                if (products.length === 0) {
+                    container.innerHTML = `<p class="text-center col-span-full text-gray-500 py-10">Belum ada produk yang tersedia.</p>`;
+                    return;
+                }
+
+                container.innerHTML = products.map((p, index) => {
+                    // Gunakan placeholder jika foto_produk kosong
+                    const imagePath = p.foto_produk ? p.foto_produk : 'https://images.unsplash.com/photo-1583258292688-d0213dc5a3a8?auto=format&fit=crop&w=500';
+
+                    return `
                     <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 group" 
                          data-aos="zoom-in" 
                          data-aos-delay="${(index % 4) * 100}">
@@ -208,31 +211,31 @@
                         </div>
                     </div>
                 `;
-            }).join('');
+                }).join('');
 
-            // Re-init AOS agar animasi jalan pada elemen baru
-            AOS.refresh();
+                // Re-init AOS agar animasi jalan pada elemen baru
+                AOS.refresh();
 
-        } catch (error) {
-            console.error("Error loading products:", error);
-            document.getElementById('product-container').innerHTML = `<p class="text-center col-span-full text-red-500">Gagal memuat produk. Silakan coba lagi nanti.</p>`;
+            } catch (error) {
+                console.error("Error loading products:", error);
+                document.getElementById('product-container').innerHTML = `<p class="text-center col-span-full text-red-500">Gagal memuat produk. Silakan coba lagi nanti.</p>`;
+            }
         }
-    }
 
-    // Fungsi Tambah ke Keranjang (Dummy)
-    function addToCart(id) {
-        alert("Produk ditambahkan ke keranjang! Silakan login untuk melanjutkan transaksi.");
-        window.location.href = 'login.html';
-    }
+        // Fungsi Tambah ke Keranjang (Dummy)
+        function addToCart(id) {
+            alert("Produk ditambahkan ke keranjang! Silakan login untuk melanjutkan transaksi.");
+            window.location.href = 'login.html';
+        }
 
-    // Jalankan saat halaman dimuat
-    document.addEventListener('DOMContentLoaded', () => {
-        fetchProducts();
-        AOS.init({
-            once: true,
+        // Jalankan saat halaman dimuat
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchProducts();
+            AOS.init({
+                once: true,
+            });
         });
-    });
-</script>
+    </script>
 </body>
 
 </html>

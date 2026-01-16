@@ -12,7 +12,8 @@ CREATE TABLE users (
     saldo DECIMAL(15,2) DEFAULT 0.00,
     role ENUM('warga', 'admin') DEFAULT 'warga',
     status_verifikasi ENUM('pending', 'verified', 'rejected') DEFAULT 'pending',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    push_subscription JSON NULL
 );
 
 -- 2. Tabel Produk

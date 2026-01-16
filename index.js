@@ -10,6 +10,7 @@ const midtransClient = require('midtrans-client');
 const crypto = require('crypto');
 const sharp = require('sharp');
 const cors = require('cors');
+const webPush = require("web-push");
 
 
 const snap = new midtransClient.Snap({
@@ -73,7 +74,36 @@ const authenticateToken = (req, res, next) => {
     });
 };
 
-// --- ENDPOINT AUTH & WARGA ---
+
+// SET VAPID
+webPush.setVapidDetails(
+  "mailto:admin@bumdes.com",
+  process.env.VAPID_PUBLIC_KEY,
+  process.env.VAPID_PRIVATE_KEY
+);
+
+// SIMPAN SUBSCRIPTION (CONTOH SEDERHANA)
+app.post("/api/subscribe", authenticateToken, (req, res) => {
+  const subscription = req.body;
+  const userId = req.user.id;
+
+  if (!subscription || !subscription.endpoint) {
+    return res.status(400).json({ message: "Subscription tidak valid" });
+  }
+
+  const sql = `
+    UPDATE users
+    SET push_subscription = ?
+    WHERE id = ?
+  `;
+
+  db.query(sql, [JSON.stringify(subscription), userId], err => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ success: true });
+  });
+});
+
+
 
 // Register Warga
 app.post('/api/register', upload.single('ktp'), async (req, res) => {
@@ -201,17 +231,49 @@ app.get('/api/admin/users', authenticateToken, (req, res) => {
 
 // Update status verifikasi (Satu endpoint untuk semua aksi verifikasi/reject)
 app.put('/api/admin/users/status/:id', authenticateToken, (req, res) => {
-    if (req.user.role !== 'admin') return res.status(403).json({ message: 'Akses ditolak' });
+  if (req.user.role !== 'admin')
+    return res.status(403).json({ message: 'Akses ditolak' });
 
-    const { status } = req.body;
-    const { id } = req.params;
+  const { status } = req.body;
+  const { id } = req.params;
 
-    const sql = "UPDATE users SET status_verifikasi = ? WHERE id = ?";
-    db.query(sql, [status, id], (err, result) => {
-        if (err) return res.status(500).json({ error: err.message });
-        res.json({ message: `User berhasil di-${status}` });
+  const sql = "UPDATE users SET status_verifikasi = ? WHERE id = ?";
+  db.query(sql, [status, id], async (err) => {
+    if (err) return res.status(500).json({ error: err.message });
+
+    // Ambil subscription user
+    const subSql = "SELECT push_subscription FROM users WHERE id = ?";
+    db.query(subSql, [id], async (err, rows) => {
+      if (err || !rows.length) {
+        return res.json({ message: `User di-${status}, tanpa notifikasi` });
+      }
+
+      const subscription = rows[0].push_subscription;
+      if (!subscription) {
+        return res.json({ message: `User di-${status}, user belum aktifkan notif` });
+      }
+
+      // Payload notif
+      const payload = JSON.stringify({
+        title: "BUMDes Digital",
+        url: "/login.html",
+        body:
+          status === "Verified"
+            ? "Akun kamu berhasil diverifikasi"
+            : "Status akun kamu diperbarui",
+      });
+
+      try {
+        await webPush.sendNotification(JSON.parse(subscription), payload);
+      } catch (e) {
+        console.log("Push gagal:", e.message);
+      }
+
+      res.json({ message: `User berhasil di-${status} + notifikasi terkirim` });
     });
+  });
 });
+
 
 // --- ENDPOINT ORDER (TAMBAHAN LOGIKA STOK) ---
 app.post('/api/orders/checkout', authenticateToken, async (req, res) => {
