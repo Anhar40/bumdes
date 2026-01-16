@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pendaftaran Warga - BUMDes Digital</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-slate-50 min-h-screen py-12 px-4">
+
+    <div class="max-w-3xl mx-auto" data-aos="fade-up">
+        <div class="text-center mb-10">
+            <div class="inline-block bg-emerald-600 p-3 rounded-2xl mb-4 shadow-lg shadow-emerald-200">
+                <i class="fas fa-user-plus text-white text-2xl"></i>
+            </div>
+            <h1 class="text-3xl font-bold text-gray-800">Pendaftaran Warga Desa</h1>
+            <p class="text-gray-500 mt-2">Lengkapi data diri Anda untuk menikmati layanan BUMDes</p>
+        </div>
+
+        <div class="bg-white rounded-3xl shadow-xl shadow-slate-200/60 overflow-hidden">
+            <form id="regForm" class="p-8 md:p-12 space-y-8">
+                
+                <div>
+                    <h2 class="text-sm font-bold uppercase tracking-wider text-emerald-600 mb-6 flex items-center gap-2">
+                        <span class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-xs">1</span>
+                        Informasi Identitas
+                    </h2>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label class="text-sm font-semibold text-gray-700">Nama Lengkap</label>
+                            <input type="text" name="nama" required placeholder="Masukkan nama" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-sm font-semibold text-gray-700">NIK (16 Digit)</label>
+                            <input type="text" name="nik" required maxlength="16" placeholder="32xxxxxxxxxxxxxx" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition">
+                        </div>
+                        <div class="space-y-2 md:col-span-2">
+                            <label class="text-sm font-semibold text-gray-700">Buat Kata Sandi</label>
+                            <input type="password" name="password" required placeholder="••••••••" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition">
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="border-gray-100">
+
+                <div>
+                    <h2 class="text-sm font-bold uppercase tracking-wider text-emerald-600 mb-6 flex items-center gap-2">
+                        <span class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-xs">2</span>
+                        Alamat & Kontak
+                    </h2>
+                    <div class="space-y-6">
+                        <div class="space-y-2">
+                            <label class="text-sm font-semibold text-gray-700">Alamat Lengkap</label>
+                            <textarea name="alamat" rows="3" required placeholder="Nama jalan, RT/RW, Dusun..." class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition"></textarea>
+                        </div>
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="text-sm font-semibold text-gray-700">No. WhatsApp</label>
+                                <input type="tel" name="no_hp" required placeholder="08xxxxxxxx" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-sm font-semibold text-gray-700">Email</label>
+                                <input type="email" name="email" required placeholder="email@contoh.com" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="border-gray-100">
+
+                <div>
+                    <h2 class="text-sm font-bold uppercase tracking-wider text-emerald-600 mb-6 flex items-center gap-2">
+                        <span class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-xs">3</span>
+                        Verifikasi KTP
+                    </h2>
+                    <div class="border-2 border-dashed border-gray-200 rounded-2xl p-8 text-center hover:border-emerald-400 transition cursor-pointer relative group">
+                        <input type="file" id="ktpInput" name="ktp" class="absolute inset-0 opacity-0 cursor-pointer" accept="image/*" required>
+                        <div id="previewContainer" class="space-y-2">
+                            <i class="fas fa-id-card text-4xl text-gray-300 group-hover:text-emerald-500 transition"></i>
+                            <p class="text-sm text-gray-500">Klik atau seret foto KTP Anda ke sini</p>
+                            <p class="text-xs text-gray-400">Format: JPG, PNG (Max. 2MB)</p>
+                        </div>
+                        <img id="ktpPreview" class="hidden mx-auto h-40 rounded-lg shadow-md object-cover">
+                    </div>
+                </div>
+
+                <div id="statusMsg" class="hidden p-4 rounded-xl text-sm font-medium"></div>
+
+                <div class="pt-4">
+                    <button type="submit" id="btnSubmit" class="w-full bg-emerald-600 text-white py-4 rounded-2xl font-bold text-lg hover:bg-emerald-700 transition transform hover:-translate-y-1 shadow-xl shadow-emerald-200 flex items-center justify-center gap-2">
+                        <span id="btnText">Daftar Sekarang</span> <i class="fas fa-arrow-right text-sm"></i>
+                    </button>
+                    <p class="text-center mt-6 text-gray-500 text-sm">
+                        Sudah punya akun? <a href="login.html" class="text-emerald-600 font-bold hover:underline">Masuk di sini</a>
+                    </p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init();
+
+        // 1. Logic Preview KTP
+        const ktpInput = document.getElementById('ktpInput');
+        const ktpPreview = document.getElementById('ktpPreview');
+        const previewContainer = document.getElementById('previewContainer');
+
+        ktpInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    ktpPreview.src = e.target.result;
+                    ktpPreview.classList.remove('hidden');
+                    previewContainer.classList.add('hidden');
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // 2. Logic Submit Register
+        document.getElementById('regForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const btn = document.getElementById('btnSubmit');
+            const btnText = document.getElementById('btnText');
+            const statusMsg = document.getElementById('statusMsg');
+            
+            // UI Loading
+            btn.disabled = true;
+            btnText.innerText = "Mengirim Data...";
+            statusMsg.classList.add('hidden');
+
+            // Gunakan FormData karena ada upload file
+            const formData = new FormData(this);
+
+            try {
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    body: formData
+                    // Jangan set Content-Type header manual jika menggunakan FormData
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    statusMsg.innerText = "Pendaftaran Berhasil! Mengalihkan ke halaman login...";
+                    statusMsg.className = "p-4 rounded-xl text-sm font-medium bg-emerald-50 text-emerald-700 block";
+                    setTimeout(() => window.location.href = 'login.html', 3000);
+                } else {
+                    statusMsg.innerText = "Gagal: " + result.error;
+                    statusMsg.className = "p-4 rounded-xl text-sm font-medium bg-red-50 text-red-700 block";
+                    btn.disabled = false;
+                    btnText.innerText = "Daftar Sekarang";
+                }
+            } catch (error) {
+                statusMsg.innerText = "Terjadi kesalahan koneksi ke server.";
+                statusMsg.className = "p-4 rounded-xl text-sm font-medium bg-red-50 text-red-700 block";
+                btn.disabled = false;
+                btnText.innerText = "Daftar Sekarang";
+            }
+        });
+    </script>
+</body>
+</html>

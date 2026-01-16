@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Persetujuan Tarik Tunai - Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-slate-50 flex min-h-screen">
+
+    <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 z-40 hidden lg:hidden" onclick="toggleSidebar()"></div>
+
+    <aside id="sidebar" class="fixed inset-y-0 left-0 w-72 bg-emerald-900 text-white z-50 transform -translate-x-full lg:translate-x-0 lg:static transition-transform duration-300 ease-in-out flex flex-col p-6 h-screen">
+        <div class="flex items-center justify-between mb-10 px-2">
+            <div class="flex items-center gap-3">
+                <div class="bg-emerald-400 p-2 rounded-xl text-emerald-900 shadow-lg shadow-emerald-500/20">
+                    <i class="fas fa-leaf text-xl"></i>
+                </div>
+                <span class="text-xl font-extrabold tracking-tight">Admin Panel</span>
+            </div>
+            <button onclick="toggleSidebar()" class="lg:hidden text-emerald-300">
+                <i class="fas fa-times text-2xl"></i>
+            </button>
+        </div>
+        
+        <nav class="space-y-2 flex-1 overflow-y-auto custom-scrollbar pr-2">
+            <a href="dashboard.html" class="flex items-center gap-3 p-3.5 hover:bg-emerald-800/50 rounded-xl transition-all group">
+                <i class="fas fa-home opacity-70"></i> Dashboard
+            </a>
+            <a href="warga.html" class="flex items-center gap-3 p-3.5 hover:bg-emerald-800/50 rounded-xl transition-all group">
+                <i class="fas fa-users opacity-70 group-hover:opacity-100"></i> Data Warga
+            </a>
+            <div class="pt-4 pb-2 px-3 text-[10px] font-bold text-emerald-400 uppercase tracking-widest">Keuangan</div>
+            <a href="persetujuan-pinjaman.html" class="flex items-center gap-3 p-3.5 hover:bg-emerald-800/50 rounded-xl transition-all group">
+                <i class="fas fa-hand-holding-usd opacity-70 group-hover:opacity-100"></i> Persetujuan Pinjaman
+            </a>
+            <a href="simpanan.html" class="flex items-center gap-3 p-3.5 bg-emerald-700 rounded-xl font-bold shadow-lg shadow-black/10 transition-all">
+                <i class="fas fa-money-bill-wave"></i> Tarik Tunai
+            </a>
+            <a href="jurnal_kas.html" class="flex items-center gap-3 p-3.5 hover:bg-emerald-800/50 rounded-xl transition-all group">
+                <i class="fas fa-file-invoice-dollar opacity-70 group-hover:opacity-100"></i> Jurnal Kas
+            </a>
+            <a href="riwayat_pinjaman.html" class="flex items-center gap-3 p-3 hover:bg-emerald-800 rounded-xl transition">
+                <i class="fas fa-history"></i> Riwayat Pinjaman
+            </a>
+            <div class="pt-4 pb-2 px-3 text-[10px] font-bold text-emerald-400 uppercase tracking-widest">Pesanan Dan Produk</div>
+            <a href="pesanan.html" class="flex items-center gap-3 p-3 hover:bg-emerald-800 rounded-xl transition">
+                <i class="fas fa-shopping-cart"></i> Pesanan Toko
+            </a>
+            <a href="produk.html" class="flex items-center gap-3 p-3 hover:bg-emerald-800 rounded-xl transition">
+                <i class="fas fa-box"></i> Produk
+            </a>
+        </nav>
+
+        <button onclick="logout()" class="flex items-center gap-3 p-3.5 text-emerald-300 hover:text-white hover:bg-red-500/10 rounded-xl transition-all mt-auto border-t border-emerald-800 pt-6">
+            <i class="fas fa-sign-out-alt"></i> Keluar Sistem
+        </button>
+    </aside>
+    
+    <main class="flex-1 min-w-0 flex flex-col h-screen overflow-hidden">
+        <header class="bg-white border-b border-gray-100 p-4 md:p-10 sticky top-0 z-30">
+            <div class="flex items-center gap-4 mb-4 lg:hidden">
+                <button onclick="toggleSidebar()" class="p-2 bg-slate-100 rounded-lg text-gray-600">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <span class="font-bold text-gray-800">Menu Admin</span>
+            </div>
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-extrabold text-gray-900 tracking-tight">Antrean Tarik Tunai</h1>
+                    <p class="text-gray-500 text-sm mt-1">Konfirmasi pengajuan pencairan dana dari tabungan warga.</p>
+                </div>
+                <div class="bg-white px-4 py-2 w-fit rounded-2xl shadow-sm border border-gray-100 flex items-center gap-3">
+                    <div class="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></div>
+                    <span id="counter" class="text-sm font-bold text-gray-700">0 Pengajuan</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="flex-1 overflow-y-auto p-4 md:p-10">
+            <div id="request-container" class="max-w-4xl mx-auto space-y-4">
+                <div class="text-center py-20 bg-white rounded-[2rem] border border-dashed border-gray-200">
+                    <i class="fas fa-circle-notch fa-spin text-emerald-500 text-3xl mb-4"></i>
+                    <p class="text-gray-400 font-medium tracking-wide uppercase text-xs">Menghubungkan ke Server...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        }
+
+        const token = localStorage.getItem('token');
+        if (!token) window.location.href = 'login.html';
+
+        async function fetchRequests() {
+            try {
+                const res = await fetch('/api/admin/withdraw-requests', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                document.getElementById('counter').innerText = `${data.length} Pengajuan`;
+                renderRequests(data);
+            } catch (err) {
+                console.error(err);
+                document.getElementById('request-container').innerHTML = `<p class="text-red-500 text-center">Gagal mengambil data.</p>`;
+            }
+        }
+
+        function renderRequests(requests) {
+            const container = document.getElementById('request-container');
+            if (requests.length === 0) {
+                container.innerHTML = `
+                <div class="bg-white p-10 md:p-16 rounded-[2rem] md:rounded-[2.5rem] text-center shadow-sm border border-gray-100">
+                    <div class="w-16 h-16 md:w-20 md:h-20 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl md:text-3xl">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <h3 class="text-lg md:text-xl font-bold text-gray-800">Semua Beres!</h3>
+                    <p class="text-gray-500 mt-2 text-sm md:text-base">Tidak ada antrean penarikan dana saat ini.</p>
+                </div>`;
+                return;
+            }
+
+            container.innerHTML = requests.map(req => `
+                <div class="bg-white p-5 md:p-6 rounded-[1.5rem] md:rounded-[2rem] shadow-sm border border-gray-100 flex flex-col lg:flex-row lg:items-center justify-between gap-6 transition-all hover:shadow-xl hover:shadow-emerald-900/5 group">
+                    <div class="flex items-center gap-4 md:gap-5">
+                        <div class="w-14 h-14 md:w-16 md:h-16 bg-gradient-to-br from-amber-50 to-orange-50 text-amber-600 rounded-[1rem] md:rounded-[1.25rem] flex items-center justify-center text-xl md:text-2xl shadow-inner shrink-0 group-hover:scale-110 transition-transform">
+                            <i class="fas fa-money-bill-transfer"></i>
+                        </div>
+                        <div class="min-w-0">
+                            <h3 class="font-extrabold text-gray-900 text-base md:text-lg truncate">${req.nama}</h3>
+                            <div class="flex items-center gap-2 mt-1">
+                                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Saldo:</span>
+                                <span class="text-xs md:text-sm font-bold text-emerald-600">Rp ${Number(req.saldo_saat_ini).toLocaleString('id-ID')}</span>
+                            </div>
+                            <div class="mt-2 flex items-center gap-2">
+                                <i class="fas fa-quote-left text-[9px] text-gray-300"></i>
+                                <p class="text-[11px] md:text-xs text-gray-500 font-medium italic truncate max-w-[150px] md:max-w-xs">${req.keterangan || 'Tanpa keterangan'}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between lg:justify-end gap-4 md:gap-8 bg-slate-50 lg:bg-transparent p-4 lg:p-0 rounded-2xl">
+                        <div class="text-left lg:text-right w-full sm:w-auto">
+                            <p class="text-[9px] text-gray-400 uppercase font-black tracking-widest">Nominal Tarik</p>
+                            <p class="text-xl md:text-2xl font-black text-gray-900 mt-1">Rp ${Number(req.jumlah).toLocaleString('id-ID')}</p>
+                        </div>
+                        <div class="flex gap-2 w-full sm:w-auto">
+                            <button onclick="processAction(${req.id}, 'rejected')" class="flex-1 sm:flex-none w-12 h-12 rounded-xl md:rounded-2xl border-2 border-red-50 text-red-400 hover:bg-red-500 hover:text-white transition-all flex items-center justify-center" title="Tolak">
+                                <i class="fas fa-times"></i>
+                            </button>
+                            <button onclick="processAction(${req.id}, 'approved')" class="flex-[3] sm:flex-none bg-emerald-600 text-white px-6 md:px-8 py-3 rounded-xl md:rounded-2xl font-bold hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-200 flex items-center justify-center gap-2 text-sm md:text-base">
+                                <i class="fas fa-check-circle"></i> Setujui
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function processAction(id, action) {
+            const isApprove = action === 'approved';
+            if (!confirm(isApprove ? 'Konfirmasi persetujuan? Saldo warga akan langsung didebet.' : 'Tolak pengajuan ini?')) return;
+
+            try {
+                const res = await fetch('/api/admin/process-withdraw', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ id, action })
+                });
+
+                if (res.ok) {
+                    fetchRequests();
+                } else {
+                    const err = await res.json();
+                    alert(err.error || "Gagal memproses.");
+                }
+            } catch (err) { alert("Kesalahan koneksi."); }
+        }
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = '../login.html';
+        }
+
+        fetchRequests();
+    </script>
+</body>
+</html>

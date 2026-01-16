@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Riwayat Pesanan - BUMDes Digital</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        /* Animasi transisi warna tombol */
+        .filter-btn { transition: all 0.3s ease; }
+    </style>
+</head>
+<body class="bg-slate-50">
+
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-2xl mx-auto px-4 h-16 flex items-center justify-between">
+            <a href="katalog.html" class="text-gray-600 hover:text-emerald-600 transition">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <h1 class="text-lg font-bold text-gray-800">Pesanan Saya</h1>
+            <div class="w-5"></div>
+        </div>
+    </nav>
+
+    <main class="max-w-2xl mx-auto px-4 py-8">
+        <div class="flex gap-4 mb-8 overflow-x-auto pb-2 no-scrollbar" id="filter-container">
+            <button onclick="filterAction('all', this)" 
+                class="filter-btn whitespace-nowrap bg-emerald-600 text-white px-6 py-2 rounded-full text-xs font-bold shadow-md shadow-emerald-100">
+                Semua
+            </button>
+            <button onclick="filterAction('berjalan', this)" 
+                class="filter-btn whitespace-nowrap bg-white text-gray-500 px-6 py-2 rounded-full text-xs font-bold border border-gray-200 hover:bg-emerald-50">
+                Berjalan
+            </button>
+            <button onclick="filterAction('selesai', this)" 
+                class="filter-btn whitespace-nowrap bg-white text-gray-500 px-6 py-2 rounded-full text-xs font-bold border border-gray-200 hover:bg-emerald-50">
+                Selesai
+            </button>
+        </div>
+
+        <div id="history-container" class="space-y-4">
+            <div class="text-center py-20 text-gray-400">
+                <i class="fas fa-circle-notch fa-spin text-3xl mb-3"></i>
+                <p>Memuat riwayat belanja...</p>
+            </div>
+        </div>
+    </main>
+
+    <div class="md:hidden fixed bottom-0 left-0 right-0 z-[100] px-4 pb-4">
+        <div
+            class="bg-white/80 backdrop-blur-lg border border-gray-200 rounded-[2rem] shadow-[0_-10px_25px_-5px_rgba(0,0,0,0.1)] flex justify-between items-center px-2 py-2">
+
+            <a href="home.html"
+                class="flex flex-col items-center justify-center w-16 h-14 text-emerald-600 transition-all duration-300">
+                <div class="relative flex items-center justify-center">
+                    <i class="fas fa-home text-xl"></i>
+                    <span class="absolute -bottom-1 w-1 h-1 bg-emerald-600 rounded-full"></span>
+                </div>
+                <span class="text-[10px] font-bold mt-1 uppercase tracking-tighter">Home</span>
+            </a>
+
+            <a href="katalog.html"
+                class="flex flex-col items-center justify-center w-16 h-14 text-gray-400 hover:text-emerald-500 transition-all duration-300">
+                <i class="fas fa-store text-xl"></i>
+                <span class="text-[10px] font-medium mt-1 uppercase tracking-tighter">Toko</span>
+            </a>
+
+            <a href="simpanan.html" class="flex flex-col items-center justify-center -mt-8">
+                <div
+                    class="bg-emerald-600 text-white w-14 h-14 rounded-2xl shadow-lg shadow-emerald-200 flex items-center justify-center mb-1 border-4 border-white transform active:scale-90 transition-all duration-200">
+                    <i class="fas fa-plus text-xl"></i>
+                </div>
+                <span class="text-[10px] font-bold text-emerald-700 uppercase tracking-tighter">Top Up</span>
+            </a>
+
+            <a href="tagihan.html"
+                class="flex flex-col items-center justify-center w-16 h-14 text-gray-400 hover:text-emerald-500 transition-all duration-300">
+                <i class="fas fa-file-invoice-dollar text-xl"></i>
+                <span class="text-[10px] font-medium mt-1 uppercase tracking-tighter">Tagihan</span>
+            </a>
+
+            <button onclick="toggleMenu()"
+                class="flex flex-col items-center justify-center w-16 h-14 text-gray-400 hover:text-emerald-500 transition-all duration-300">
+                <div class="grid grid-cols-2 gap-0.5">
+                    <div class="w-1.5 h-1.5 bg-current rounded-sm"></div>
+                    <div class="w-1.5 h-1.5 bg-current rounded-sm"></div>
+                    <div class="w-1.5 h-1.5 bg-current rounded-sm"></div>
+                    <div class="w-1.5 h-1.5 bg-current rounded-sm"></div>
+                </div>
+                <span class="text-[10px] font-medium mt-1 uppercase tracking-tighter leading-none pt-1">Menu</span>
+            </button>
+        </div>
+    </div>
+
+    <style>
+        @media (max-width: 768px) {
+            body {
+                padding-bottom: 90px;
+            }
+        }
+
+        /* Animasi sederhana untuk icon */
+        .active-nav {
+            color: #059669 !important;
+            /* emerald-600 */
+        }
+    </style>
+
+    <div id="mobile-menu-modal" class="fixed inset-0 z-[110] hidden">
+        <div class="absolute inset-0 bg-emerald-950/40 backdrop-blur-md transition-opacity"></div>
+
+        <div class="absolute bottom-0 left-0 right-0 bg-white rounded-t-[3rem] p-8 transform translate-y-full transition-transform duration-300 ease-out shadow-2xl"
+            id="modal-content">
+            <div class="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-8"></div>
+
+            <div class="flex justify-between items-center mb-8">
+                <h3 class="text-2xl font-black text-gray-800">Semua Layanan</h3>
+                <button onclick="toggleMenu()"
+                    class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-500">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="grid grid-cols-3 gap-6 mb-10">
+                <a href="simpanan.html" class="flex flex-col items-center gap-2">
+                    <div
+                        class="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-2xl shadow-sm">
+                        <i class="fas fa-piggy-bank"></i></div>
+                    <span class="text-xs font-bold text-gray-600">Simpanan</span>
+                </a>
+                <a href="pinjaman.html" class="flex flex-col items-center gap-2">
+                    <div
+                        class="w-16 h-16 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center text-2xl shadow-sm">
+                        <i class="fas fa-hand-holding-usd"></i></div>
+                    <span class="text-xs font-bold text-gray-600">Pinjaman</span>
+                </a>
+                <a href="tagihan.html" class="flex flex-col items-center gap-2">
+                    <div
+                        class="w-16 h-16 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center text-2xl shadow-sm">
+                        <i class="fas fa-file-invoice"></i></div>
+                    <span class="text-xs font-bold text-gray-600">Tagihan</span>
+                </a>
+                <a href="katalog.html" class="flex flex-col items-center gap-2">
+                    <div
+                        class="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center text-2xl shadow-sm">
+                        <i class="fas fa-store"></i></div>
+                    <span class="text-xs font-bold text-gray-600">Toko Desa</span>
+                </a>
+                <a href="pesanan-saya.html" class="flex flex-col items-center gap-2">
+                    <div
+                        class="w-16 h-16 bg-rose-50 text-rose-600 rounded-2xl flex items-center justify-center text-2xl shadow-sm">
+                        <i class="fas fa-shopping-bag"></i></div>
+                    <span class="text-xs font-bold text-gray-600">Pesanan</span>
+                </a>
+                <a href="riwayat.html" class="flex flex-col items-center gap-2">
+                    <div
+                        class="w-16 h-16 bg-slate-100 text-slate-600 rounded-2xl flex items-center justify-center text-2xl shadow-sm">
+                        <i class="fas fa-history"></i></div>
+                    <span class="text-xs font-bold text-gray-600">Mutasi</span>
+                </a>
+            </div>
+
+            <button onclick="logout()"
+                class="w-full py-4 bg-red-50 text-red-600 rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-red-100 transition">
+                <i class="fas fa-sign-out-alt"></i> Keluar dari Akun
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const token = localStorage.getItem('token');
+        let allOrders = []; // Simpan data asli dari server
+
+        if (!token) {
+            window.location.href = '/login.html';
+        }
+
+        // Fungsi Utama: Ambil Data
+        async function fetchMyOrders() {
+            try {
+                const response = await fetch('/api/orders/my-history', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                allOrders = await response.json();
+                renderHistory(allOrders);
+            } catch (error) {
+                console.error("Fetch error:", error);
+                document.getElementById('history-container').innerHTML = `<p class="text-center text-red-500 py-10">Gagal memuat data.</p>`;
+            }
+        }
+
+        // Fungsi Filter & Ubah Warna Tombol
+        function filterAction(status, btnElement) {
+            // 1. Reset semua tombol ke desain "tidak aktif" (putih)
+            const allBtns = document.querySelectorAll('.filter-btn');
+            allBtns.forEach(btn => {
+                btn.classList.remove('bg-emerald-600', 'text-white', 'shadow-md', 'shadow-emerald-100');
+                btn.classList.add('bg-white', 'text-gray-500', 'border-gray-200');
+            });
+
+            // 2. Set tombol yang dipencet jadi "aktif" (hijau)
+            btnElement.classList.remove('bg-white', 'text-gray-500', 'border-gray-200');
+            btnElement.classList.add('bg-emerald-600', 'text-white', 'shadow-md', 'shadow-emerald-100');
+
+            // 3. Eksekusi filter data
+            if (status === 'all') {
+                renderHistory(allOrders);
+            } else if (status === 'berjalan') {
+                renderHistory(allOrders.filter(o => o.status_order !== 'selesai'));
+            } else if (status === 'selesai') {
+                renderHistory(allOrders.filter(o => o.status_order === 'selesai'));
+            }
+        }
+
+        function renderHistory(orders) {
+            const container = document.getElementById('history-container');
+            
+            if (orders.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-20 bg-white rounded-3xl border border-dashed border-gray-200">
+                        <i class="fas fa-receipt text-4xl text-gray-200 mb-4"></i>
+                        <p class="text-gray-400">Tidak ada pesanan ditemukan</p>
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = orders.map(order => {
+                const statusStyles = {
+                    'pending': 'bg-amber-100 text-amber-600',
+                    'diproses': 'bg-blue-100 text-blue-600',
+                    'dikirim': 'bg-indigo-100 text-indigo-600',
+                    'selesai': 'bg-emerald-100 text-emerald-600'
+                };
+
+                return `
+                <div class="bg-white p-5 rounded-3xl border border-gray-100 shadow-sm">
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">#TRX-${order.id}</span>
+                        <span class="${statusStyles[order.status_order]} text-[10px] px-3 py-1 rounded-full font-black uppercase">
+                            ${order.status_order}
+                        </span>
+                    </div>
+
+                    <div class="mb-4">
+                        <p class="text-sm font-bold text-gray-800 line-clamp-2">${order.rincian || 'Detail produk'}</p>
+                        <p class="text-[10px] text-gray-500 mt-1 italic font-medium">
+                            ${new Date(order.tgl_transaksi).toLocaleString('id-ID')}
+                        </p>
+                    </div>
+
+                    <div class="flex justify-between items-center pt-4 border-t border-gray-50">
+                        <div>
+                            <p class="text-[10px] text-gray-400 font-bold uppercase">Total Belanja</p>
+                            <p class="text-lg font-black text-emerald-600">Rp ${Number(order.total_bayar).toLocaleString('id-ID')}</p>
+                        </div>
+                        
+                        ${order.status_order === 'dikirim' ? `
+                            <button onclick="updateStatusSelesai(${order.id})" 
+                                class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-[10px] font-bold hover:bg-emerald-700 shadow-lg shadow-emerald-100">
+                                TERIMA PESANAN
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        async function updateStatusSelesai(id) {
+            if(!confirm("Pastikan barang sudah diterima. Lanjutkan?")) return;
+            try {
+                const res = await fetch(`/api/admin/orders/${id}/status`, {
+                    method: 'PUT',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ status: 'selesai' })
+                });
+                if(res.ok) fetchMyOrders();
+            } catch (err) { alert("Error updating status"); }
+        }
+
+        function toggleMenu() {
+            const modal = document.getElementById('mobile-menu-modal');
+            const content = document.getElementById('modal-content');
+
+            if (modal.classList.contains('hidden')) {
+                // Buka Modal
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    content.classList.remove('translate-y-full');
+                }, 10);
+                document.body.style.overflow = 'hidden'; // Lock scroll body
+            } else {
+                // Tutup Modal
+                content.classList.add('translate-y-full');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 300);
+                document.body.style.overflow = 'auto'; // Unlock scroll body
+            }
+        }
+
+        // Tutup modal jika user mengklik bagian luar modal (backdrop)
+        document.getElementById('mobile-menu-modal').addEventListener('click', function (e) {
+            if (e.target === this.firstElementChild) {
+                toggleMenu();
+            }
+        });
+
+        // Start
+        fetchMyOrders();
+    </script>
+</body>
+</html>

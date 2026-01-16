@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beranda Warga - BUMDes Digital</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body class="bg-gray-50">
+
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 h-20 flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <div class="bg-emerald-600 p-2 rounded-lg text-white">
+                    <i class="fas fa-leaf"></i>
+                </div>
+                <span class="text-xl font-bold text-gray-800 tracking-tight">BUMDes<span
+                        class="text-emerald-600">Digital</span></span>
+            </div>
+
+            <div class="flex items-center gap-6">
+                <a href="keranjang.html" class="relative text-gray-600 hover:text-emerald-600 transition">
+                    <i class="fas fa-shopping-cart text-xl"></i>
+                    <span id="cart-count"
+                        class="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">0</span>
+                </a>
+                <div class="flex items-center gap-3 border-l pl-6">
+                    <div class="text-right hidden md:block">
+                        <p id="user-name-display" class="text-sm font-bold text-gray-800 italic">Memuat...</p>
+                        <p class="text-[10px] text-emerald-600 font-bold uppercase tracking-widest">Warga Desa</p>
+                    </div>
+                    <button onclick="logout()"
+                        class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-red-50 hover:text-red-500 transition">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <header class="max-w-6xl mx-auto px-4 py-10">
+        <div
+            class="bg-emerald-600 rounded-[2rem] p-8 md:p-12 text-white relative overflow-hidden shadow-2xl shadow-emerald-200">
+            <div class="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                <div>
+                    <h1 class="text-3xl md:text-4xl font-bold mb-2">Halo, <span id="welcome-name">Tetangga</span>! 👋
+                    </h1>
+                    <p class="text-emerald-100 max-w-md mb-6">Kembangkan potensi ekonomi desa kita melalui layanan
+                        digital terpadu.</p>
+
+                    <div id="status-badge"
+                        class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md px-4 py-2 rounded-full text-xs font-bold border border-white/20">
+                        <i class="fas fa-circle-notch fa-spin"></i> Mengecek Verifikasi
+                    </div>
+                </div>
+
+                <div class="bg-white/10 backdrop-blur-xl p-8 rounded-[2.5rem] border border-white/20 shadow-inner">
+                    <div class="flex justify-between items-start mb-4">
+                        <p class="text-xs uppercase font-bold tracking-[0.2em] opacity-80">Saldo Digital Anda</p>
+                        <i class="fas fa-wallet opacity-50 text-xl"></i>
+                    </div>
+                    <h2 id="user-saldo" class="text-4xl md:text-5xl font-black tracking-tight mb-4">Rp 0</h2>
+                    <div class="flex gap-2">
+                        <a href="pinjaman.html"
+                            class="bg-white text-emerald-700 px-4 py-2 rounded-xl text-xs font-bold hover:bg-emerald-50 transition">Ajukan
+                            Pinjaman</a>
+                        <a href="tagihan.html"
+                            class="bg-emerald-700/50 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-emerald-700 transition">Riwayat</a>
+                    </div>
+                </div>
+            </div>
+            <div class="absolute -right-20 -bottom-20 w-64 h-64 bg-emerald-500 rounded-full blur-3xl opacity-50"></div>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 pb-20">
+
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-12">
+            <a href="simpanan.html"
+                class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 hover:border-emerald-500 transition group">
+                <div
+                    class="bg-blue-50 text-blue-600 w-12 h-12 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition">
+                    <i class="fas fa-piggy-bank text-xl"></i>
+                </div>
+                <p class="font-bold text-gray-800 text-sm">Simpanan</p>
+            </a>
+            <a href="pinjaman.html"
+                class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 hover:border-emerald-500 transition group">
+                <div
+                    class="bg-amber-50 text-amber-600 w-12 h-12 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition">
+                    <i class="fas fa-hand-holding-usd text-xl"></i>
+                </div>
+                <p class="font-bold text-gray-800 text-sm">Pinjaman</p>
+            </a>
+            <a href="tagihan.html"
+                class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 hover:border-emerald-500 transition group">
+                <div
+                    class="bg-purple-50 text-purple-600 w-12 h-12 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition">
+                    <i class="fas fa-file-invoice text-xl"></i>
+                </div>
+                <p class="font-bold text-gray-800 text-sm">Tagihan</p>
+            </a>
+            <a href="katalog.html"
+                class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 hover:border-emerald-500 transition group">
+                <div
+                    class="bg-emerald-50 text-emerald-600 w-12 h-12 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition">
+                    <i class="fas fa-store text-xl"></i>
+                </div>
+                <p class="font-bold text-gray-800 text-sm">Toko Desa</p>
+            </a>
+            <a href="pesanan-saya.html"
+                class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 hover:border-emerald-500 transition group">
+                <div
+                    class="bg-rose-50 text-rose-600 w-12 h-12 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition">
+                    <i class="fas fa-shopping-bag text-xl"></i>
+                </div>
+                <p class="font-bold text-gray-800 text-sm">Pesanan</p>
+            </a>
+            <a href="profile.html"
+                class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 hover:border-emerald-500 transition group">
+                <div
+                    class="bg-slate-50 text-slate-600 w-12 h-12 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition">
+                    <i class="fas fa-user-circle text-xl"></i>
+                </div>
+                <p class="font-bold text-gray-800 text-sm">Profil</p>
+            </a>
+            <a href="riwayat.html"
+                class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 hover:border-emerald-500 transition group">
+                <div
+                    class="bg-slate-50 text-slate-600 w-12 h-12 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition">
+                    <i class="fas fa-history text-xl"></i>
+                </div>
+                <p class="font-bold text-gray-800 text-sm">Mutasi</p>
+            </a>
+        </div>
+
+        <div class="flex justify-between items-end mb-8">
+            <div>
+                <h2 class="text-2xl font-bold text-gray-800">Produk Unggulan Desa</h2>
+                <p class="text-gray-500 text-sm">Hasil karya UMKM Desa kita</p>
+            </div>
+            <a href="katalog.html" class="text-emerald-600 font-bold text-sm hover:underline">Lihat Semua</a>
+        </div>
+
+        <div id="product-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="animate-pulse bg-white p-4 rounded-3xl border border-gray-100">
+                <div class="bg-gray-200 h-48 rounded-2xl mb-4"></div>
+                <div class="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                <div class="h-4 bg-gray-200 rounded w-1/2"></div>
+            </div>
+        </div>
+    </main>
+
+    <div class="md:hidden fixed bottom-0 left-0 right-0 z-[100] px-4 pb-4">
+        <div
+            class="bg-white/80 backdrop-blur-lg border border-gray-200 rounded-[2rem] shadow-[0_-10px_25px_-5px_rgba(0,0,0,0.1)] flex justify-between items-center px-2 py-2">
+
+            <a href="home.html"
+                class="flex flex-col items-center justify-center w-16 h-14 text-emerald-600 transition-all duration-300">
+                <div class="relative flex items-center justify-center">
+                    <i class="fas fa-home text-xl"></i>
+                    <span class="absolute -bottom-1 w-1 h-1 bg-emerald-600 rounded-full"></span>
+                </div>
+                <span class="text-[10px] font-bold mt-1 uppercase tracking-tighter">Home</span>
+            </a>
+
+            <a href="katalog.html"
+                class="flex flex-col items-center justify-center w-16 h-14 text-gray-400 hover:text-emerald-500 transition-all duration-300">
+                <i class="fas fa-store text-xl"></i>
+                <span class="text-[10px] font-medium mt-1 uppercase tracking-tighter">Toko</span>
+            </a>
+
+            <a href="simpanan.html" class="flex flex-col items-center justify-center -mt-8">
+                <div
+                    class="bg-emerald-600 text-white w-14 h-14 rounded-2xl shadow-lg shadow-emerald-200 flex items-center justify-center mb-1 border-4 border-white transform active:scale-90 transition-all duration-200">
+                    <i class="fas fa-plus text-xl"></i>
+                </div>
+                <span class="text-[10px] font-bold text-emerald-700 uppercase tracking-tighter">Top Up</span>
+            </a>
+
+            <a href="tagihan.html"
+                class="flex flex-col items-center justify-center w-16 h-14 text-gray-400 hover:text-emerald-500 transition-all duration-300">
+                <i class="fas fa-file-invoice-dollar text-xl"></i>
+                <span class="text-[10px] font-medium mt-1 uppercase tracking-tighter">Tagihan</span>
+            </a>
+
+            <button onclick="toggleMenu()"
+                class="flex flex-col items-center justify-center w-16 h-14 text-gray-400 hover:text-emerald-500 transition-all duration-300">
+                <div class="grid grid-cols-2 gap-0.5">
+                    <div class="w-1.5 h-1.5 bg-current rounded-sm"></div>
+                    <div class="w-1.5 h-1.5 bg-current rounded-sm"></div>
+                    <div class="w-1.5 h-1.5 bg-current rounded-sm"></div>
+                    <div class="w-1.5 h-1.5 bg-current rounded-sm"></div>
+                </div>
+                <span class="text-[10px] font-medium mt-1 uppercase tracking-tighter leading-none pt-1">Menu</span>
+            </button>
+        </div>
+    </div>
+
+    <style>
+        @media (max-width: 768px) {
+            body {
+                padding-bottom: 90px;
+            }
+        }
+
+        /* Animasi sederhana untuk icon */
+        .active-nav {
+            color: #059669 !important;
+            /* emerald-600 */
+        }
+    </style>
+
+    <div id="mobile-menu-modal" class="fixed inset-0 z-[110] hidden">
+        <div class="absolute inset-0 bg-emerald-950/40 backdrop-blur-md transition-opacity"></div>
+
+        <div class="absolute bottom-0 left-0 right-0 bg-white rounded-t-[3rem] p-8 transform translate-y-full transition-transform duration-300 ease-out shadow-2xl"
+            id="modal-content">
+            <div class="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-8"></div>
+
+            <div class="flex justify-between items-center mb-8">
+                <h3 class="text-2xl font-black text-gray-800">Semua Layanan</h3>
+                <button onclick="toggleMenu()"
+                    class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-500">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="grid grid-cols-3 gap-6 mb-10">
+                <a href="simpanan.html" class="flex flex-col items-center gap-2">
+                    <div
+                        class="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-2xl shadow-sm">
+                        <i class="fas fa-piggy-bank"></i></div>
+                    <span class="text-xs font-bold text-gray-600">Simpanan</span>
+                </a>
+                <a href="pinjaman.html" class="flex flex-col items-center gap-2">
+                    <div
+                        class="w-16 h-16 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center text-2xl shadow-sm">
+                        <i class="fas fa-hand-holding-usd"></i></div>
+                    <span class="text-xs font-bold text-gray-600">Pinjaman</span>
+                </a>
+                <a href="tagihan.html" class="flex flex-col items-center gap-2">
+                    <div
+                        class="w-16 h-16 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center text-2xl shadow-sm">
+                        <i class="fas fa-file-invoice"></i></div>
+                    <span class="text-xs font-bold text-gray-600">Tagihan</span>
+                </a>
+                <a href="katalog.html" class="flex flex-col items-center gap-2">
+                    <div
+                        class="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center text-2xl shadow-sm">
+                        <i class="fas fa-store"></i></div>
+                    <span class="text-xs font-bold text-gray-600">Toko Desa</span>
+                </a>
+                <a href="pesanan-saya.html" class="flex flex-col items-center gap-2">
+                    <div
+                        class="w-16 h-16 bg-rose-50 text-rose-600 rounded-2xl flex items-center justify-center text-2xl shadow-sm">
+                        <i class="fas fa-shopping-bag"></i></div>
+                    <span class="text-xs font-bold text-gray-600">Pesanan</span>
+                </a>
+                <a href="riwayat.html" class="flex flex-col items-center gap-2">
+                    <div
+                        class="w-16 h-16 bg-slate-100 text-slate-600 rounded-2xl flex items-center justify-center text-2xl shadow-sm">
+                        <i class="fas fa-history"></i></div>
+                    <span class="text-xs font-bold text-gray-600">Mutasi</span>
+                </a>
+            </div>
+
+            <button onclick="logout()"
+                class="w-full py-4 bg-red-50 text-red-600 rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-red-100 transition">
+                <i class="fas fa-sign-out-alt"></i> Keluar dari Akun
+            </button>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init();
+        const token = localStorage.getItem('token');
+
+        // 1. Validasi Akses
+        if (!token) window.location.href = '/login.html';
+
+        // 2. Ambil Profil User (Nama, Saldo, Status Verifikasi)
+        async function fetchUserData() {
+            try {
+                const response = await fetch('/api/profile', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const user = await response.json();
+
+                // Update UI Profil & Saldo
+                document.getElementById('user-name-display').innerText = user.nama;
+                document.getElementById('welcome-name').innerText = user.nama;
+                document.getElementById('user-saldo').innerText = `Rp ${Number(user.saldo).toLocaleString('id-ID')}`;
+
+                // Update UI Badge Verifikasi
+                const badge = document.getElementById('status-badge');
+                if (user.status_verifikasi === 'verified') {
+                    badge.className = 'inline-flex items-center gap-2 bg-white text-emerald-700 px-4 py-2 rounded-full font-bold text-[10px]';
+                    badge.innerHTML = '<i class="fas fa-check-circle"></i> AKUN TERVERIFIKASI';
+                } else if (user.status_verifikasi === 'pending') {
+                    badge.className = 'inline-flex items-center gap-2 bg-amber-100 text-amber-700 px-4 py-2 rounded-full font-bold text-[10px]';
+                    badge.innerHTML = '<i class="fas fa-clock"></i> VERIFIKASI DIPROSES';
+                } else {
+                    badge.className = 'inline-flex items-center gap-2 bg-red-100 text-red-700 px-4 py-2 rounded-full font-bold text-[10px]';
+                    badge.innerHTML = '<i class="fas fa-exclamation-triangle"></i> BELUM VERIFIKASI';
+                }
+            } catch (error) {
+                console.error('Gagal mengambil data profil:', error);
+                logout(); // Logout jika token tidak valid
+            }
+        }
+
+        // 3. Ambil Produk dari API
+        async function fetchProducts() {
+            try {
+                const response = await fetch('/api/products');
+                const products = await response.json();
+
+                const container = document.getElementById('product-list');
+                container.innerHTML = products.map(p => `
+                    <div class="bg-white p-4 rounded-3xl shadow-sm border border-gray-100 hover:shadow-xl transition-all group" data-aos="fade-up">
+                        <div class="relative overflow-hidden rounded-2xl mb-4">
+                            <img src="${p.foto_produk ? '/uploads/' + p.foto_produk : 'https://via.placeholder.com/300x200'}" class="w-full h-48 object-cover group-hover:scale-110 transition duration-500">
+                            <span class="absolute top-3 left-3 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-[10px] font-bold text-emerald-700 uppercase">${p.kategori || 'Produk'}</span>
+                        </div>
+                        <h3 class="font-bold text-gray-800 mb-1">${p.nama_produk}</h3>
+                        <p class="text-xs text-gray-500 mb-4 line-clamp-2">${p.deskripsi || ''}</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-lg font-bold text-emerald-600">Rp ${Number(p.harga).toLocaleString('id-ID')}</span>
+                            <button onclick="addToCart(${p.id}, '${p.nama_produk}', ${p.harga}, '${p.foto_produk}')" class="bg-gray-900 text-white w-10 h-10 rounded-xl flex items-center justify-center hover:bg-emerald-600 transition">
+                                <i class="fas fa-shopping-cart text-sm"></i>
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Gagal memuat produk:', error);
+            }
+        }
+
+        // 4. Sistem Keranjang
+        // PASTIKAN FUNGSI INI SEPERTI INI DI HALAMAN BERANDA
+        function addToCart(id, name, price, img) {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+            // Pastikan ID dikonversi ke Number agar konsisten
+            const productId = Number(id);
+            const index = cart.findIndex(item => Number(item.id) === productId);
+
+            if (index > -1) {
+                cart[index].qty += 1;
+            } else {
+                // BAGIAN PENTING: Sertakan 'id' di sini!
+                cart.push({
+                    id: productId,
+                    nama_produk: name,
+                    harga: Number(price),
+                    qty: 1,
+                    foto_produk: img
+                });
+            }
+
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartCount();
+            alert(`✅ ${name} masuk keranjang!`);
+        }
+
+        function updateCartCount() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const total = cart.reduce((sum, item) => sum + item.qty, 0);
+            document.getElementById('cart-count').innerText = total;
+        }
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = '/login.html';
+        }
+        function toggleMenu() {
+            const modal = document.getElementById('mobile-menu-modal');
+            const content = document.getElementById('modal-content');
+
+            if (modal.classList.contains('hidden')) {
+                // Buka Modal
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    content.classList.remove('translate-y-full');
+                }, 10);
+                document.body.style.overflow = 'hidden'; // Lock scroll body
+            } else {
+                // Tutup Modal
+                content.classList.add('translate-y-full');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 300);
+                document.body.style.overflow = 'auto'; // Unlock scroll body
+            }
+        }
+
+        // Tutup modal jika user mengklik bagian luar modal (backdrop)
+        document.getElementById('mobile-menu-modal').addEventListener('click', function (e) {
+            if (e.target === this.firstElementChild) {
+                toggleMenu();
+            }
+        });
+
+        // Inisialisasi awal
+        fetchUserData();
+        fetchProducts();
+        updateCartCount();
+    </script>
+</body>
+
+</html>

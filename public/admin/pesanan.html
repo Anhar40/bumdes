@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Manajemen Pesanan - Admin BUMDes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+        
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+    </style>
+</head>
+
+<body class="bg-slate-50 flex min-h-screen">
+
+    <div id="sidebarOverlay" class="fixed inset-0 bg-black/60 z-[60] hidden lg:hidden backdrop-blur-sm" onclick="toggleSidebar()"></div>
+    <aside id="sidebar" class="fixed inset-y-0 left-0 w-72 bg-emerald-900 text-white z-[70] transform -translate-x-full lg:translate-x-0 lg:static transition-transform duration-300 ease-in-out flex flex-col h-screen shrink-0 shadow-2xl lg:shadow-none">
+        <div class="p-6 flex flex-col h-full">
+            <div class="flex items-center justify-between mb-10 px-2">
+                <div class="flex items-center gap-3">
+                    <div class="bg-emerald-400 p-2 rounded-xl text-emerald-900 shadow-lg shadow-emerald-500/20">
+                        <i class="fas fa-leaf text-xl"></i>
+                    </div>
+                    <span class="text-xl font-extrabold tracking-tight">Admin Panel</span>
+                </div>
+                <button onclick="toggleSidebar()" class="lg:hidden text-emerald-300 hover:text-white">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <nav class="space-y-2 flex-1 overflow-y-auto custom-scrollbar pr-2">
+            <a href="dashboard.html" class="flex items-center gap-3 p-3.5 hover:bg-emerald-800/50 rounded-xl transition-all group">
+                <i class="fas fa-home opacity-70"></i> Dashboard
+            </a>
+            <a href="warga.html" class="flex items-center gap-3 p-3.5 hover:bg-emerald-800/50 rounded-xl transition-all group">
+                <i class="fas fa-users opacity-70 group-hover:opacity-100"></i> Data Warga
+            </a>
+            <div class="pt-4 pb-2 px-3 text-[10px] font-bold text-emerald-400 uppercase tracking-widest">Keuangan</div>
+            <a href="persetujuan-pinjaman.html" class="flex items-center gap-3 p-3.5 hover:bg-emerald-800/50 rounded-xl transition-all group">
+                <i class="fas fa-hand-holding-usd opacity-70 group-hover:opacity-100"></i> Persetujuan Pinjaman
+            </a>
+            <a href="simpanan.html" class="flex items-center gap-3 p-3.5 hover:bg-emerald-800/50 rounded-xl transition-all group">
+                <i class="fas fa-money-bill-wave"></i> Tarik Tunai
+            </a>
+            <a href="jurnal_kas.html" class="flex items-center gap-3 p-3.5 hover:bg-emerald-800/50 rounded-xl transition-all group">
+                <i class="fas fa-file-invoice-dollar opacity-70 group-hover:opacity-100"></i> Jurnal Kas
+            </a>
+            <a href="riwayat_pinjaman.html" class="flex items-center gap-3 p-3 hover:bg-emerald-800 rounded-xl transition">
+                <i class="fas fa-history"></i> Riwayat Pinjaman
+            </a>
+            <div class="pt-4 pb-2 px-3 text-[10px] font-bold text-emerald-400 uppercase tracking-widest">Pesanan Dan Produk</div>
+            <a href="pesanan.html" class="flex items-center gap-3 p-3.5 bg-emerald-700 rounded-xl font-bold shadow-lg shadow-black/10 transition-all">
+                <i class="fas fa-shopping-cart"></i> Pesanan Toko
+            </a>
+            <a href="produk.html" class="flex items-center gap-3 p-3 hover:bg-emerald-800 rounded-xl transition">
+                <i class="fas fa-box"></i> Produk
+            </a>
+        </nav>
+
+            <button onclick="logout()" class="mt-auto p-4 border-t border-emerald-800/50 text-emerald-300 flex items-center gap-3 hover:text-white hover:bg-red-500/10 rounded-xl transition duration-300">
+                <i class="fas fa-sign-out-alt"></i> 
+                <span class="font-bold text-sm uppercase tracking-wider">Keluar Sistem</span>
+            </button>
+        </div>
+    </aside>
+
+    <main class="flex-1 min-w-0 w-full flex flex-col">
+        <header class="bg-white border-b border-gray-100 p-4 lg:p-8 sticky top-0 z-40">
+            <div class="max-w-7xl mx-auto">
+                <div class="flex items-center gap-4 lg:hidden mb-4">
+                    <button onclick="toggleSidebar()" class="w-10 h-10 flex items-center justify-center bg-slate-100 rounded-xl text-emerald-900">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <span class="font-bold text-gray-800">Manajemen Pesanan</span>
+                </div>
+                
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <h1 class="text-xl lg:text-2xl font-black text-gray-900">Pesanan Masuk</h1>
+                        <p class="text-gray-500 text-xs md:text-sm italic lg:not-italic">Kelola transaksi penjualan secara real-time.</p>
+                    </div>
+                    <button onclick="window.print()" class="w-full sm:w-auto h-11 px-6 bg-slate-50 border border-slate-200 text-slate-600 rounded-xl text-xs font-bold hover:bg-slate-100 transition flex items-center justify-center gap-2">
+                        <i class="fas fa-print"></i> Cetak Laporan
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div class="p-4 lg:p-8 max-w-7xl mx-auto w-full">
+            <div class="flex gap-2 border-b border-gray-100 mb-6 overflow-x-auto no-scrollbar scroll-smooth" id="filter-tabs">
+                <button onclick="filterOrders('all', this)" class="tab-btn pb-4 px-4 border-b-2 border-emerald-600 text-emerald-600 font-bold text-xs whitespace-nowrap transition-all uppercase tracking-wider">Semua</button>
+                <button onclick="filterOrders('pending', this)" class="tab-btn pb-4 px-4 border-b-2 border-transparent text-gray-400 font-bold text-xs whitespace-nowrap transition-all uppercase tracking-wider">Menunggu</button>
+                <button onclick="filterOrders('diproses', this)" class="tab-btn pb-4 px-4 border-b-2 border-transparent text-gray-400 font-bold text-xs whitespace-nowrap transition-all uppercase tracking-wider">Diproses</button>
+                <button onclick="filterOrders('dikirim', this)" class="tab-btn pb-4 px-4 border-b-2 border-transparent text-gray-400 font-bold text-xs whitespace-nowrap transition-all uppercase tracking-wider">Dikirim</button>
+                <button onclick="filterOrders('selesai', this)" class="tab-btn pb-4 px-4 border-b-2 border-transparent text-gray-400 font-bold text-xs whitespace-nowrap transition-all uppercase tracking-wider">Selesai</button>
+            </div>
+
+            <div id="order-container" class="grid grid-cols-1 gap-4 lg:gap-6">
+                </div>
+        </div>
+    </main>
+
+    <div id="detail-modal" class="fixed inset-0 bg-black/60 hidden z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-sm transition-opacity">
+        <div class="bg-white rounded-t-[2rem] sm:rounded-[2.5rem] w-full max-w-lg overflow-hidden animate-slide-up sm:animate-zoom-in">
+            <div class="p-8">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-black text-gray-800 tracking-tight">Detail Pesanan</h2>
+                    <button onclick="closeModal()" class="w-10 h-10 flex items-center justify-center bg-gray-50 rounded-full text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div id="modal-content" class="space-y-4 max-h-[60vh] overflow-y-auto custom-scrollbar pr-2">
+                    </div>
+                <button onclick="closeModal()" class="w-full mt-8 bg-slate-100 text-slate-600 font-bold py-4 rounded-2xl hover:bg-slate-200 transition active:scale-95">Tutup Detail</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const token = localStorage.getItem('token');
+        let allOrders = [];
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('-translate-x-full');
+            document.getElementById('sidebarOverlay').classList.toggle('hidden');
+        }
+
+        async function fetchOrders() {
+            try {
+                const response = await fetch('/api/admin/orders', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                allOrders = await response.json();
+                renderOrders(allOrders);
+            } catch (error) { console.error("Gagal memuat:", error); }
+        }
+
+        function filterOrders(status, element) {
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('border-emerald-600', 'text-emerald-600');
+                btn.classList.add('border-transparent', 'text-gray-400');
+            });
+            if (element) {
+                element.classList.remove('border-transparent', 'text-gray-400');
+                element.classList.add('border-emerald-600', 'text-emerald-600');
+            }
+            const filtered = status === 'all' ? allOrders : allOrders.filter(o => o.status_order === status);
+            renderOrders(filtered);
+        }
+
+        function renderOrders(orders) {
+            const container = document.getElementById('order-container');
+            if (orders.length === 0) {
+                container.innerHTML = `<div class="text-center py-20 bg-white rounded-3xl border border-dashed border-gray-200"><p class="text-gray-400 font-bold">Kosong</p></div>`;
+                return;
+            }
+
+            container.innerHTML = orders.map(order => {
+                const statusMap = {
+                    'pending': 'bg-amber-100 text-amber-600',
+                    'diproses': 'bg-blue-100 text-blue-600',
+                    'dikirim': 'bg-indigo-100 text-indigo-600',
+                    'selesai': 'bg-emerald-100 text-emerald-600'
+                };
+
+                return `
+                <div class="bg-white p-5 lg:p-6 rounded-[2rem] border border-gray-100 shadow-sm hover:shadow-md transition duration-300">
+                    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+                        
+                        <div class="flex items-start gap-4">
+                            <div class="w-12 h-12 lg:w-16 lg:h-16 bg-emerald-50 rounded-2xl flex items-center justify-center shrink-0 text-xl lg:text-2xl text-emerald-600 shadow-inner">
+                                <i class="fas fa-shopping-bag"></i>
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <div class="flex items-center flex-wrap gap-2 mb-1">
+                                    <h3 class="font-black text-gray-900 text-base">#TRX-${order.id}</h3>
+                                    <span class="${statusMap[order.status_order]} text-[9px] px-2.5 py-1 rounded-lg font-black uppercase tracking-widest">${order.status_order}</span>
+                                </div>
+                                <p class="text-sm font-bold text-gray-600 truncate mb-1"><i class="far fa-user mr-2 text-emerald-500"></i>${order.nama_warga}</p>
+                                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-tight">${new Date(order.tgl_transaksi).toLocaleDateString('id-ID', {day:'numeric', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit'})}</p>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col sm:flex-row lg:flex-col justify-between items-stretch sm:items-center lg:items-end gap-4 border-t lg:border-t-0 border-gray-50 pt-4 lg:pt-0">
+                            <div class="text-left sm:text-right">
+                                <p class="text-[9px] text-gray-400 font-black uppercase tracking-widest leading-none mb-1">Total Pembayaran</p>
+                                <p class="text-xl font-black text-emerald-600 leading-none tracking-tight">Rp ${Number(order.total_bayar).toLocaleString('id-ID')}</p>
+                            </div>
+                            <div class="flex gap-2 w-full sm:w-auto">
+                                <button onclick="showDetail(${order.id})" class="flex-1 sm:flex-none bg-slate-100 text-slate-600 px-5 h-10 rounded-xl text-[11px] font-black uppercase hover:bg-slate-200 active:scale-95 transition">Detail</button>
+                                ${getActionButtons(order)}
+                            </div>
+                        </div>
+
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function getActionButtons(order) {
+            const btnClass = "flex-1 sm:flex-none px-5 h-10 rounded-xl text-[11px] font-black uppercase text-white active:scale-95 transition shadow-lg shadow-opacity-20";
+            if(order.status_order === 'pending') return `<button onclick="updateStatus(${order.id}, 'diproses')" class="${btnClass} bg-emerald-600 shadow-emerald-100">Proses</button>`;
+            if(order.status_order === 'diproses') return `<button onclick="updateStatus(${order.id}, 'dikirim')" class="${btnClass} bg-indigo-600 shadow-indigo-100">Kirim</button>`;
+            if(order.status_order === 'dikirim') return `<button onclick="updateStatus(${order.id}, 'selesai')" class="${btnClass} bg-emerald-600 shadow-emerald-100">Selesai</button>`;
+            return '';
+        }
+
+        async function showDetail(orderId) {
+            try {
+                const response = await fetch(`/api/admin/orders/${orderId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const items = await response.json();
+                let html = '<div class="space-y-3">';
+                items.forEach(item => {
+                    html += `
+                    <div class="p-4 bg-slate-50 rounded-2xl flex justify-between items-center border border-slate-100">
+                        <div class="min-w-0 pr-4">
+                            <p class="font-black text-gray-800 text-sm truncate uppercase tracking-tight">${item.nama_produk}</p>
+                            <p class="text-[10px] font-bold text-gray-400 mt-0.5">${item.qty} Unit x Rp ${Number(item.harga).toLocaleString('id-ID')}</p>
+                        </div>
+                        <p class="font-black text-emerald-600 text-sm shrink-0">Rp ${Number(item.subtotal).toLocaleString('id-ID')}</p>
+                    </div>`;
+                });
+                html += '</div>';
+                document.getElementById('modal-content').innerHTML = html;
+                document.getElementById('detail-modal').classList.remove('hidden');
+            } catch (err) { alert("Gagal mengambil detail pesanan"); }
+        }
+
+        function closeModal() { document.getElementById('detail-modal').classList.add('hidden'); }
+
+        async function updateStatus(id, status) {
+            if (!confirm(`Ubah status pesanan ini menjadi ${status.toUpperCase()}?`)) return;
+            try {
+                await fetch(`/api/admin/orders/${id}/status`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ status })
+                });
+                fetchOrders();
+            } catch (e) { alert("Gagal update status"); }
+        }
+
+        fetchOrders();
+    </script>
+</body>
+</html>

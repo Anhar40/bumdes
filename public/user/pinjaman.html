@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pengajuan Pinjaman - BUMDes Digital</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gray-50 min-h-screen">
+
+    <nav class="bg-white border-b p-4 sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto flex items-center gap-4">
+            <a href="home.html" class="text-gray-500 hover:text-emerald-600 transition">
+                <i class="fas fa-arrow-left text-xl"></i>
+            </a>
+            <h1 class="font-bold text-gray-800 text-xl">Pengajuan Pinjaman</h1>
+        </div>
+    </nav>
+
+    <div class="max-w-4xl mx-auto py-10 px-4">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            
+            <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
+                <h2 class="text-xl font-bold text-gray-800 mb-6">Formulir Pinjaman</h2>
+                <form id="loanForm" class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Jumlah Pinjaman (Rp)</label>
+                        <div class="relative">
+                            <span class="absolute left-4 top-3.5 text-gray-400 font-bold">Rp</span>
+                            <input type="number" id="loanAmount" required min="500000" max="50000000" step="500000"
+                                class="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition"
+                                placeholder="Contoh: 5000000">
+                        </div>
+                        <p class="text-[10px] text-gray-400 mt-1">*Min: 500rb, Max: 50jt</p>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Jangka Waktu (Bulan)</label>
+                        <div class="relative">
+                            <select id="loanTenure" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition appearance-none bg-white">
+                                <option value="3">3 Bulan</option>
+                                <option value="6">6 Bulan</option>
+                                <option value="12">12 Bulan</option>
+                                <option value="24">24 Bulan</option>
+                            </select>
+                            <i class="fas fa-chevron-down absolute right-4 top-4 text-gray-400 pointer-events-none"></i>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Tujuan Pinjaman</label>
+                        <textarea id="loanPurpose" rows="3" required
+                            class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition"
+                            placeholder="Misal: Modal Usaha Warung..."></textarea>
+                    </div>
+
+                    <button type="submit" id="btnSubmit" class="w-full bg-emerald-600 text-white py-4 rounded-2xl font-bold shadow-lg shadow-emerald-100 hover:bg-emerald-700 transition transform active:scale-95 flex items-center justify-center gap-2">
+                        Ajukan Sekarang
+                    </button>
+                </form>
+            </div>
+
+            <div class="space-y-6">
+                <div class="bg-emerald-900 text-white p-8 rounded-3xl shadow-xl relative overflow-hidden">
+                    <h3 class="text-lg font-semibold opacity-80 mb-6">Simulasi Angsuran</h3>
+                    
+                    <div class="space-y-4 relative z-10">
+                        <div class="flex justify-between items-center border-b border-white/10 pb-4">
+                            <span class="text-sm opacity-70">Pokok Pinjaman</span>
+                            <span id="sim-pokok" class="font-bold">Rp 0</span>
+                        </div>
+                        <div class="flex justify-between items-center border-b border-white/10 pb-4">
+                            <span class="text-sm opacity-70">Bunga (1% / bln)</span>
+                            <span id="sim-bunga" class="font-bold">Rp 0</span>
+                        </div>
+                        <div class="pt-4">
+                            <p class="text-sm opacity-70 mb-1">Angsuran per Bulan</p>
+                            <p id="sim-total" class="text-4xl font-bold text-emerald-400">Rp 0</p>
+                        </div>
+                    </div>
+
+                    <div class="absolute -top-10 -right-10 w-32 h-32 bg-emerald-800 rounded-full opacity-50"></div>
+                </div>
+
+                <div class="bg-amber-50 border border-amber-100 p-6 rounded-3xl">
+                    <div class="flex gap-4">
+                        <i class="fas fa-info-circle text-amber-500 text-xl mt-1"></i>
+                        <div>
+                            <h4 class="font-bold text-amber-800 text-sm mb-1">Catatan Penting</h4>
+                            <ul class="text-xs text-amber-700 space-y-2 list-disc ml-4">
+                                <li>Persetujuan memerlukan verifikasi lapangan oleh pengurus BUMDes.</li>
+                                <li>Bunga 1% merupakan bunga tetap (flat).</li>
+                                <li>Pastikan data profil Anda sudah lengkap.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="md:hidden fixed bottom-0 left-0 right-0 z-[100] px-4 pb-4">
+        <div
+            class="bg-white/80 backdrop-blur-lg border border-gray-200 rounded-[2rem] shadow-[0_-10px_25px_-5px_rgba(0,0,0,0.1)] flex justify-between items-center px-2 py-2">
+
+            <a href="home.html"
+                class="flex flex-col items-center justify-center w-16 h-14 text-emerald-600 transition-all duration-300">
+                <div class="relative flex items-center justify-center">
+                    <i class="fas fa-home text-xl"></i>
+                    <span class="absolute -bottom-1 w-1 h-1 bg-emerald-600 rounded-full"></span>
+                </div>
+                <span class="text-[10px] font-bold mt-1 uppercase tracking-tighter">Home</span>
+            </a>
+
+            <a href="katalog.html"
+                class="flex flex-col items-center justify-center w-16 h-14 text-gray-400 hover:text-emerald-500 transition-all duration-300">
+                <i class="fas fa-store text-xl"></i>
+                <span class="text-[10px] font-medium mt-1 uppercase tracking-tighter">Toko</span>
+            </a>
+
+            <a href="simpanan.html" class="flex flex-col items-center justify-center -mt-8">
+                <div
+                    class="bg-emerald-600 text-white w-14 h-14 rounded-2xl shadow-lg shadow-emerald-200 flex items-center justify-center mb-1 border-4 border-white transform active:scale-90 transition-all duration-200">
+                    <i class="fas fa-plus text-xl"></i>
+                </div>
+                <span class="text-[10px] font-bold text-emerald-700 uppercase tracking-tighter">Top Up</span>
+            </a>
+
+            <a href="tagihan.html"
+                class="flex flex-col items-center justify-center w-16 h-14 text-gray-400 hover:text-emerald-500 transition-all duration-300">
+                <i class="fas fa-file-invoice-dollar text-xl"></i>
+                <span class="text-[10px] font-medium mt-1 uppercase tracking-tighter">Tagihan</span>
+            </a>
+
+            <button onclick="toggleMenu()"
+                class="flex flex-col items-center justify-center w-16 h-14 text-gray-400 hover:text-emerald-500 transition-all duration-300">
+                <div class="grid grid-cols-2 gap-0.5">
+                    <div class="w-1.5 h-1.5 bg-current rounded-sm"></div>
+                    <div class="w-1.5 h-1.5 bg-current rounded-sm"></div>
+                    <div class="w-1.5 h-1.5 bg-current rounded-sm"></div>
+                    <div class="w-1.5 h-1.5 bg-current rounded-sm"></div>
+                </div>
+                <span class="text-[10px] font-medium mt-1 uppercase tracking-tighter leading-none pt-1">Menu</span>
+            </button>
+        </div>
+    </div>
+
+    <style>
+        @media (max-width: 768px) {
+            body {
+                padding-bottom: 90px;
+            }
+        }
+
+        /* Animasi sederhana untuk icon */
+        .active-nav {
+            color: #059669 !important;
+            /* emerald-600 */
+        }
+    </style>
+
+    <div id="mobile-menu-modal" class="fixed inset-0 z-[110] hidden">
+        <div class="absolute inset-0 bg-emerald-950/40 backdrop-blur-md transition-opacity"></div>
+
+        <div class="absolute bottom-0 left-0 right-0 bg-white rounded-t-[3rem] p-8 transform translate-y-full transition-transform duration-300 ease-out shadow-2xl"
+            id="modal-content">
+            <div class="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-8"></div>
+
+            <div class="flex justify-between items-center mb-8">
+                <h3 class="text-2xl font-black text-gray-800">Semua Layanan</h3>
+                <button onclick="toggleMenu()"
+                    class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-500">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="grid grid-cols-3 gap-6 mb-10">
+                <a href="simpanan.html" class="flex flex-col items-center gap-2">
+                    <div
+                        class="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-2xl shadow-sm">
+                        <i class="fas fa-piggy-bank"></i></div>
+                    <span class="text-xs font-bold text-gray-600">Simpanan</span>
+                </a>
+                <a href="pinjaman.html" class="flex flex-col items-center gap-2">
+                    <div
+                        class="w-16 h-16 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center text-2xl shadow-sm">
+                        <i class="fas fa-hand-holding-usd"></i></div>
+                    <span class="text-xs font-bold text-gray-600">Pinjaman</span>
+                </a>
+                <a href="tagihan.html" class="flex flex-col items-center gap-2">
+                    <div
+                        class="w-16 h-16 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center text-2xl shadow-sm">
+                        <i class="fas fa-file-invoice"></i></div>
+                    <span class="text-xs font-bold text-gray-600">Tagihan</span>
+                </a>
+                <a href="katalog.html" class="flex flex-col items-center gap-2">
+                    <div
+                        class="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center text-2xl shadow-sm">
+                        <i class="fas fa-store"></i></div>
+                    <span class="text-xs font-bold text-gray-600">Toko Desa</span>
+                </a>
+                <a href="pesanan-saya.html" class="flex flex-col items-center gap-2">
+                    <div
+                        class="w-16 h-16 bg-rose-50 text-rose-600 rounded-2xl flex items-center justify-center text-2xl shadow-sm">
+                        <i class="fas fa-shopping-bag"></i></div>
+                    <span class="text-xs font-bold text-gray-600">Pesanan</span>
+                </a>
+                <a href="riwayat.html" class="flex flex-col items-center gap-2">
+                    <div
+                        class="w-16 h-16 bg-slate-100 text-slate-600 rounded-2xl flex items-center justify-center text-2xl shadow-sm">
+                        <i class="fas fa-history"></i></div>
+                    <span class="text-xs font-bold text-gray-600">Mutasi</span>
+                </a>
+            </div>
+
+            <button onclick="logout()"
+                class="w-full py-4 bg-red-50 text-red-600 rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-red-100 transition">
+                <i class="fas fa-sign-out-alt"></i> Keluar dari Akun
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const token = localStorage.getItem('token');
+
+        // 1. Validasi Akses
+        if (!token) window.location.href = '/login.html';
+        const loanAmountInput = document.getElementById('loanAmount');
+        const loanTenureInput = document.getElementById('loanTenure');
+        const bungaRate = 0.01; // 1% per bulan
+
+        function calculateSimulasi() {
+            const amount = parseFloat(loanAmountInput.value) || 0;
+            const tenure = parseInt(loanTenureInput.value);
+
+            if (amount > 0) {
+                const bungaPerBulan = amount * bungaRate;
+                const pokokPerBulan = amount / tenure;
+                const totalPerBulan = Math.round(pokokPerBulan + bungaPerBulan);
+
+                document.getElementById('sim-pokok').innerText = `Rp ${amount.toLocaleString('id-ID')}`;
+                document.getElementById('sim-bunga').innerText = `Rp ${bungaPerBulan.toLocaleString('id-ID')}`;
+                document.getElementById('sim-total').innerText = `Rp ${totalPerBulan.toLocaleString('id-ID')}`;
+                return totalPerBulan;
+            } else {
+                document.getElementById('sim-pokok').innerText = 'Rp 0';
+                document.getElementById('sim-bunga').innerText = 'Rp 0';
+                document.getElementById('sim-total').innerText = 'Rp 0';
+                return 0;
+            }
+        }
+
+        loanAmountInput.addEventListener('input', calculateSimulasi);
+        loanTenureInput.addEventListener('change', calculateSimulasi);
+
+        // HANDLE SUBMIT
+        document.getElementById('loanForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const token = localStorage.getItem('token');
+            if(!token) {
+                alert("Silakan login terlebih dahulu.");
+                return window.location.href = 'login.html';
+            }
+
+            const btnSubmit = document.getElementById('btnSubmit');
+            const angsuran = calculateSimulasi();
+
+            // Modifikasi Payload agar sesuai dengan Backend (req.body)
+            const payload = {
+                jumlah_pinjaman: parseFloat(loanAmountInput.value),
+                tenor_bulan: parseInt(loanTenureInput.value),
+                angsuran_bulanan: angsuran,
+                tujuan: document.getElementById('loanPurpose').value // Opsional jika ingin disimpan
+            };
+
+            btnSubmit.disabled = true;
+            btnSubmit.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Memproses...`;
+
+            try {
+                const response = await fetch('/api/loans/apply', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    alert('Pengajuan pinjaman berhasil dikirim!');
+                    window.location.href = 'home.html';
+                } else {
+                    alert('Gagal: ' + (result.message || result.error));
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Kesalahan jaringan atau server terputus.');
+            } finally {
+                btnSubmit.disabled = false;
+                btnSubmit.innerHTML = `Ajukan Sekarang`;
+            }
+        });
+
+        function toggleMenu() {
+            const modal = document.getElementById('mobile-menu-modal');
+            const content = document.getElementById('modal-content');
+
+            if (modal.classList.contains('hidden')) {
+                // Buka Modal
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    content.classList.remove('translate-y-full');
+                }, 10);
+                document.body.style.overflow = 'hidden'; // Lock scroll body
+            } else {
+                // Tutup Modal
+                content.classList.add('translate-y-full');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 300);
+                document.body.style.overflow = 'auto'; // Unlock scroll body
+            }
+        }
+
+        // Tutup modal jika user mengklik bagian luar modal (backdrop)
+        document.getElementById('mobile-menu-modal').addEventListener('click', function (e) {
+            if (e.target === this.firstElementChild) {
+                toggleMenu();
+            }
+        });
+    </script>
+</body>
+</html>

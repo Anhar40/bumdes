@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BUMDes Digital - Desa Mandiri</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body class="bg-gray-50 font-sans text-gray-900">
+
+    <nav class="fixed w-full z-50 bg-white/80 backdrop-blur-md shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center gap-2">
+                    <div class="bg-emerald-600 p-2 rounded-lg">
+                        <i class="fas fa-leaf text-white text-xl"></i>
+                    </div>
+                    <span
+                        class="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-500 bg-clip-text text-transparent">BUMDesDigital</span>
+                </div>
+                <div class="hidden md:flex space-x-8 font-medium">
+                    <a href="#" class="text-emerald-600">Beranda</a>
+                    <a href="#layanan" class="hover:text-emerald-600 transition">Layanan</a>
+                    <a href="#produk" class="hover:text-emerald-600 transition">Pasar Desa</a>
+                    <a href="#" class="hover:text-emerald-600 transition">Simpan Pinjam</a>
+                </div>
+                <div>
+                    <a href="login.html"
+                        class="bg-emerald-600 text-white px-6 py-2 rounded-full hover:bg-emerald-700 transition shadow-lg shadow-emerald-200">Login</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <section class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center" data-aos="fade-up" data-aos-duration="1000">
+                <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight mb-6">
+                    Membangun Ekonomi <br>
+                    <span class="text-emerald-600">Dari Desa Untuk Bangsa</span>
+                </h1>
+                <p class="text-lg text-gray-600 mb-10 max-w-2xl mx-auto">
+                    Platform terintegrasi untuk jual beli produk unggulan desa dan layanan simpan pinjam transparan bagi
+                    seluruh warga.
+                </p>
+                <div class="flex flex-col sm:flex-row justify-center gap-4">
+                    <a href="user/katalog.html"
+                        class="bg-emerald-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:scale-105 transition transform shadow-xl">Belanja
+                        Sekarang</a>
+                    <a href="user/pinjaman.html"
+                        class="bg-white text-emerald-600 border-2 border-emerald-600 px-8 py-4 rounded-xl font-bold text-lg hover:bg-emerald-50 transition">Ajukan
+                        Pinjaman</a>
+                </div>
+            </div>
+        </div>
+        <div class="absolute top-0 right-0 -z-10 opacity-10">
+            <svg width="600" height="600" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                <path fill="#059669"
+                    d="M44.7,-76.4C58.8,-69.2,71.8,-59.1,79.6,-45.8C87.4,-32.5,90,-16.3,88.5,-0.9C87,14.5,81.4,29,72.7,41.5C64.1,54.1,52.3,64.7,38.8,71.5C25.3,78.3,10.1,81.4,-4.4,89C-18.9,96.6,-32.7,108.7,-44.8,105.7C-56.9,102.7,-67.3,84.5,-75.4,68.9C-83.4,53.2,-89.1,40.1,-91.7,26.5C-94.4,12.9,-94,1.2,-90.4,-14.8C-86.8,-30.8,-80,-51.2,-67.2,-58.4C-54.4,-65.6,-35.6,-59.6,-20.5,-66.4C-5.4,-73.2,5.9,-92.8,20.5,-96C35.1,-99.2,40.7,-83.6,44.7,-76.4Z"
+                    transform="translate(100 100)" />
+            </svg>
+        </div>
+    </section>
+
+    <section id="layanan" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="text-center mb-16" data-aos="fade-up">
+                <h2 class="text-3xl font-bold mb-4">Layanan Utama Kami</h2>
+                <div class="h-1 w-20 bg-emerald-600 mx-auto"></div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="p-8 rounded-3xl bg-emerald-50 border border-emerald-100 hover:shadow-2xl transition duration-300 group"
+                    data-aos="fade-right">
+                    <div
+                        class="w-16 h-16 bg-emerald-600 rounded-2xl flex items-center justify-center mb-6 group-hover:rotate-12 transition">
+                        <i class="fas fa-shopping-basket text-2xl text-white"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-3">Pasar Desa Digital</h3>
+                    <p class="text-gray-600 mb-6">Wadahi produk UMKM lokal mulai dari kerajinan tangan hingga hasil tani
+                        organik untuk pasar yang lebih luas.</p>
+                    <a href="/user/katalog.html" class="text-emerald-600 font-bold flex items-center gap-2">Jelajahi Produk <i
+                            class="fas fa-arrow-right"></i></a>
+                </div>
+
+                <div class="p-8 rounded-3xl bg-teal-50 border border-teal-100 hover:shadow-2xl transition duration-300 group"
+                    data-aos="fade-left">
+                    <div
+                        class="w-16 h-16 bg-teal-600 rounded-2xl flex items-center justify-center mb-6 group-hover:rotate-12 transition">
+                        <i class="fas fa-hand-holding-usd text-2xl text-white"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-3">Simpan Pinjam Syariah</h3>
+                    <p class="text-gray-600 mb-6">Solusi permodalan bagi warga desa dengan proses yang mudah,
+                        transparan, dan tanpa potongan administrasi yang rumit.</p>
+                    <a href="/user/pinjaman.html" class="text-teal-600 font-bold flex items-center gap-2">Ajukan Layanan <i
+                            class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id="produk" class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between items-end mb-12" data-aos="fade-up">
+                <div>
+                    <h2 class="text-3xl font-bold mb-2">Produk Unggulan Desa</h2>
+                    <p class="text-gray-600">Hasil karya dan alam terbaik dari warga kami</p>
+                </div>
+                <a href="/user/katalog.html" class="text-emerald-600 font-semibold hover:underline">Lihat Semua <i
+                        class="fas fa-chevron-right text-xs"></i></a>
+            </div>
+
+            <div id="product-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <p class="text-center col-span-full text-gray-400">Memuat produk...</p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-gray-900 text-white pt-16 pb-8">
+        <div class="max-w-7xl mx-auto px-4 grid md:grid-cols-4 gap-12 border-b border-gray-800 pb-12">
+            <div class="col-span-2">
+                <div class="flex items-center gap-2 mb-6">
+                    <div class="bg-emerald-600 p-2 rounded-lg">
+                        <i class="fas fa-leaf text-white text-xl"></i>
+                    </div>
+                    <span class="text-2xl font-bold">BUMDesDigital</span>
+                </div>
+                <p class="text-gray-400 max-w-sm">Mewujudkan kemandirian ekonomi desa melalui digitalisasi UMKM dan
+                    pengelolaan keuangan yang akuntabel.</p>
+            </div>
+            <div>
+                <h4 class="font-bold mb-6">Navigasi</h4>
+                <ul class="space-y-4 text-gray-400 text-sm">
+                    <li><a href="#" class="hover:text-emerald-500 transition">Beranda</a></li>
+                    <li><a href="#" class="hover:text-emerald-500 transition">Katalog Produk</a></li>
+                    <li><a href="#" class="hover:text-emerald-500 transition">Simpan Pinjam</a></li>
+                    <li><a href="#" class="hover:text-emerald-500 transition">Laporan Publik</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-bold mb-6">Kontak Kami</h4>
+                <ul class="space-y-4 text-gray-400 text-sm">
+                    <li class="flex items-center gap-3"><i class="fas fa-map-marker-alt text-emerald-500"></i> Jl. Desa
+                        Sukamaju No. 1</li>
+                    <li class="flex items-center gap-3"><i class="fas fa-phone text-emerald-500"></i> +62 812 3456 7890
+                    </li>
+                    <li class="flex items-center gap-3"><i class="fas fa-envelope text-emerald-500"></i>
+                        admin@desamaju.id</li>
+                </ul>
+            </div>
+        </div>
+        <div class="text-center pt-8 text-gray-500 text-sm">
+            &copy; 2024 BUMDes Digital. Made with ❤️ for Village.
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({
+            once: true,
+        });
+    </script>
+    <script>
+    // Fungsi untuk mengambil data produk dari API
+    async function fetchProducts() {
+        try {
+            const response = await fetch('/api/products');
+            const products = await response.json();
+            
+            const container = document.getElementById('product-container');
+            
+            if (products.length === 0) {
+                container.innerHTML = `<p class="text-center col-span-full text-gray-500 py-10">Belum ada produk yang tersedia.</p>`;
+                return;
+            }
+
+            container.innerHTML = products.map((p, index) => {
+                // Gunakan placeholder jika foto_produk kosong
+                const imagePath = p.foto_produk ? p.foto_produk : 'https://images.unsplash.com/photo-1583258292688-d0213dc5a3a8?auto=format&fit=crop&w=500';
+                
+                return `
+                    <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 group" 
+                         data-aos="zoom-in" 
+                         data-aos-delay="${(index % 4) * 100}">
+                        <div class="relative overflow-hidden">
+                            <img src="${imagePath}" 
+                                 alt="${p.nama_produk}"
+                                 class="w-full h-48 object-cover group-hover:scale-110 transition duration-500">
+                            <span class="absolute top-3 left-3 bg-emerald-600 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                                ${p.kategori || 'Produk'}
+                            </span>
+                        </div>
+                        <div class="p-5">
+                            <h3 class="font-bold text-lg mb-1 text-gray-800 line-clamp-1">${p.nama_produk}</h3>
+                            <p class="text-gray-500 text-xs mb-4 line-clamp-2 h-8">${p.deskripsi || 'Tidak ada deskripsi.'}</p>
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <p class="text-[10px] text-gray-400 font-semibold uppercase">Harga</p>
+                                    <span class="text-emerald-600 font-bold text-xl">Rp ${Number(p.harga).toLocaleString('id-ID')}</span>
+                                </div>
+                                <button onclick="addToCart(${p.id})" class="bg-gray-100 p-3 rounded-xl group-hover:bg-emerald-600 group-hover:text-white transition shadow-sm">
+                                    <i class="fas fa-shopping-cart"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Re-init AOS agar animasi jalan pada elemen baru
+            AOS.refresh();
+
+        } catch (error) {
+            console.error("Error loading products:", error);
+            document.getElementById('product-container').innerHTML = `<p class="text-center col-span-full text-red-500">Gagal memuat produk. Silakan coba lagi nanti.</p>`;
+        }
+    }
+
+    // Fungsi Tambah ke Keranjang (Dummy)
+    function addToCart(id) {
+        alert("Produk ditambahkan ke keranjang! Silakan login untuk melanjutkan transaksi.");
+        window.location.href = 'login.html';
+    }
+
+    // Jalankan saat halaman dimuat
+    document.addEventListener('DOMContentLoaded', () => {
+        fetchProducts();
+        AOS.init({
+            once: true,
+        });
+    });
+</script>
+</body>
+
+</html>

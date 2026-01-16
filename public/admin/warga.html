@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Warga - Admin BUMDes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+
+        body { font-family: 'Inter', sans-serif; }
+
+        .modal-animate { animation: fadeIn 0.2s ease-out; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Custom Scrollbar */
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        
+        #ktpModal { z-index: 9999; }
+    </style>
+</head>
+
+<body class="bg-slate-50 flex min-h-screen">
+
+    <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 z-40 hidden lg:hidden" onclick="toggleSidebar()"></div>
+
+    <aside id="sidebar" class="fixed inset-y-0 left-0 w-72 bg-emerald-900 text-white z-50 transform -translate-x-full lg:translate-x-0 lg:static transition-transform duration-300 ease-in-out flex flex-col p-6 h-screen overflow-hidden">
+        <div class="flex items-center justify-between mb-10 px-2">
+            <div class="flex items-center gap-3">
+                <div class="bg-emerald-400 p-2 rounded-xl text-emerald-900 shadow-lg shadow-emerald-500/20">
+                    <i class="fas fa-leaf text-xl"></i>
+                </div>
+                <span class="text-xl font-extrabold tracking-tight">Admin Panel</span>
+            </div>
+            <button onclick="toggleSidebar()" class="lg:hidden text-emerald-300">
+                <i class="fas fa-times text-2xl"></i>
+            </button>
+        </div>
+        
+        <nav class="space-y-2 flex-1 overflow-y-auto custom-scrollbar pr-2">
+            <a href="dashboard.html" class="flex items-center gap-3 p-3.5 hover:bg-emerald-800/50 rounded-xl transition-all group">
+                <i class="fas fa-home opacity-70"></i> Dashboard
+            </a>
+            <a href="warga.html" class="flex items-center gap-3 p-3.5 bg-emerald-700 rounded-xl font-bold shadow-lg shadow-black/10 transition-all">
+                <i class="fas fa-users opacity-70 group-hover:opacity-100"></i> Data Warga
+            </a>
+            <div class="pt-4 pb-2 px-3 text-[10px] font-bold text-emerald-400 uppercase tracking-widest">Keuangan</div>
+            <a href="persetujuan-pinjaman.html" class="flex items-center gap-3 p-3.5 hover:bg-emerald-800/50 rounded-xl transition-all group">
+                <i class="fas fa-hand-holding-usd opacity-70 group-hover:opacity-100"></i> Persetujuan Pinjaman
+            </a>
+            <a href="simpanan.html" class="flex items-center gap-3 p-3.5 hover:bg-emerald-800/50 rounded-xl transition-all group">
+                <i class="fas fa-money-bill-wave"></i> Tarik Tunai
+            </a>
+            <a href="jurnal_kas.html" class="flex items-center gap-3 p-3.5 hover:bg-emerald-800/50 rounded-xl transition-all group">
+                <i class="fas fa-file-invoice-dollar opacity-70 group-hover:opacity-100"></i> Jurnal Kas
+            </a>
+            <a href="riwayat_pinjaman.html" class="flex items-center gap-3 p-3 hover:bg-emerald-800 rounded-xl transition">
+                <i class="fas fa-history"></i> Riwayat Pinjaman
+            </a>
+            <div class="pt-4 pb-2 px-3 text-[10px] font-bold text-emerald-400 uppercase tracking-widest">Pesanan Dan Produk</div>
+            <a href="pesanan.html" class="flex items-center gap-3 p-3 hover:bg-emerald-800 rounded-xl transition">
+                <i class="fas fa-shopping-cart"></i> Pesanan Toko
+            </a>
+            <a href="produk.html" class="flex items-center gap-3 p-3 hover:bg-emerald-800 rounded-xl transition">
+                <i class="fas fa-box"></i> Produk
+            </a>
+        </nav>
+
+        <button onclick="logout()" class="flex items-center gap-3 p-3.5 text-emerald-300 hover:text-white hover:bg-red-500/10 rounded-xl transition-all mt-auto border-t border-emerald-800 pt-6">
+            <i class="fas fa-sign-out-alt"></i> Keluar Sistem
+        </button>
+    </aside>
+
+    <main class="flex-1 w-full overflow-x-hidden">
+        <header class="bg-white border-b border-gray-100 sticky top-0 z-30 p-4 md:p-10">
+            <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div class="flex items-center gap-4">
+                    <button onclick="toggleSidebar()" class="lg:hidden p-2 bg-slate-100 rounded-lg text-gray-600">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div>
+                        <h1 class="text-xl md:text-2xl font-bold text-gray-800">Manajemen Data Warga</h1>
+                        <p class="text-gray-500 text-xs md:text-sm">Total Terdaftar: <span id="count-warga" class="font-bold text-emerald-600">0</span> Warga</p>
+                    </div>
+                </div>
+
+                <div class="flex gap-2 w-full md:w-auto">
+                    <div class="relative flex-1 md:w-64">
+                        <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        <input type="text" id="searchWarga" onkeyup="searchTable()" placeholder="Cari NIK atau Nama..."
+                            class="w-full pl-10 pr-4 py-2 text-sm rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-500 outline-none transition">
+                    </div>
+                    <button onclick="exportWarga()"
+                        class="bg-emerald-600 text-white px-4 py-2 rounded-xl font-bold hover:bg-emerald-700 transition text-sm">
+                        <i class="fas fa-file-export md:mr-2"></i> <span class="hidden md:inline">Export</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div class="p-4 md:p-10 max-w-7xl mx-auto">
+            <div class="bg-white rounded-2xl md:rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left min-w-[700px]" id="wargaTable">
+                        <thead class="bg-gray-50 text-[10px] uppercase text-gray-400 font-bold">
+                            <tr>
+                                <th class="px-6 py-4">Warga</th>
+                                <th class="px-6 py-4">Kontak</th>
+                                <th class="px-6 py-4">Status</th>
+                                <th class="px-6 py-4">Saldo Simpanan</th>
+                                <th class="px-6 py-4">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="warga-list" class="divide-y divide-gray-50 text-sm text-gray-700">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="detailModal" class="fixed inset-0 bg-black/60 z-[70] hidden flex items-center justify-center p-2 md:p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-[1.5rem] md:rounded-[2.5rem] w-full max-w-2xl max-h-[95vh] overflow-hidden shadow-2xl flex flex-col modal-animate">
+            <div class="p-5 md:p-6 border-b flex justify-between items-center bg-white sticky top-0">
+                <h2 class="text-lg md:text-xl font-bold text-gray-800 flex items-center gap-2">
+                    <i class="fas fa-user-circle text-emerald-600"></i> Detail Warga
+                </h2>
+                <button onclick="closeModal()" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition text-gray-400 text-2xl">&times;</button>
+            </div>
+
+            <div class="p-5 md:p-8 overflow-y-auto" id="modalContent">
+                </div>
+
+            <div class="p-5 md:p-6 border-t bg-gray-50 flex justify-end">
+                <button onclick="closeModal()" class="w-full md:w-auto px-6 py-2.5 bg-gray-200 text-gray-700 rounded-xl font-bold hover:bg-gray-300 transition text-sm">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="ktpModal" class="fixed inset-0 bg-black/90 hidden items-center justify-center z-[100] p-4" onclick="closeKtpModal()">
+        <div class="relative max-w-4xl w-full flex justify-center">
+            <button class="absolute -top-12 right-0 text-white text-3xl">&times;</button>
+            <img id="ktpModalImg" src="" class="max-w-full max-h-[80vh] rounded-lg shadow-2xl object-contain">
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <script>
+        // Sidebar Toggle
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        }
+
+        const token = localStorage.getItem('token');
+
+        async function fetchWarga() {
+            try {
+                const response = await fetch('/api/admin/users', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (!response.ok) throw new Error('Gagal mengambil data');
+                const data = await response.json();
+                window.allWarga = data;
+                renderWarga(data);
+            } catch (err) {
+                console.error(err);
+                // alert("Sesi berakhir atau terjadi kesalahan server.");
+            }
+        }
+
+        function renderWarga(data) {
+            const container = document.getElementById('warga-list');
+            document.getElementById('count-warga').innerText = data.length;
+
+            if (data.length === 0) {
+                container.innerHTML = `<tr><td colspan="5" class="p-10 text-center text-gray-400 italic">Data tidak ditemukan</td></tr>`;
+                return;
+            }
+
+            container.innerHTML = data.map(w => {
+                let statusClass = "bg-amber-100 text-amber-600";
+                if (w.status_verifikasi === 'verified') statusClass = "bg-emerald-100 text-emerald-600";
+                if (w.status_verifikasi === 'rejected') statusClass = "bg-red-100 text-red-600";
+
+                return `
+                <tr class="hover:bg-slate-50 transition border-b">
+                    <td class="px-6 py-4">
+                        <div class="flex items-center gap-3">
+                            <img src="https://ui-avatars.com/api/?name=${w.nama}&background=random" class="w-8 h-8 rounded-full shrink-0">
+                            <div class="min-w-0">
+                                <p class="font-bold text-gray-800 truncate">${w.nama}</p>
+                                <p class="text-[10px] text-gray-400 tracking-wider font-mono">${w.nik}</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 text-xs">
+                        <p class="font-medium text-gray-700">${w.no_hp || '-'}</p>
+                        <p class="text-gray-400 truncate max-w-[120px]">${w.email || '-'}</p>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="px-3 py-1 rounded-full text-[9px] font-bold ${statusClass}">
+                            ${w.status_verifikasi.toUpperCase()}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 font-bold text-gray-800 whitespace-nowrap">
+                        Rp ${(w.saldo || 0).toLocaleString('id-ID')}
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="flex gap-1">
+                            <button onclick="showDetail(${w.id})" class="p-2 text-blue-500 hover:bg-blue-100 rounded-lg transition" title="Detail">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button onclick="updateStatus(${w.id}, 'verified')" class="p-2 text-emerald-500 hover:bg-emerald-50 rounded-lg transition">
+                                <i class="fas fa-check-circle"></i>
+                            </button>
+                            <button onclick="updateStatus(${w.id}, 'rejected')" class="p-2 text-red-500 hover:bg-red-50 rounded-lg transition">
+                                <i class="fas fa-times-circle"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+
+        async function showDetail(userId) {
+            const modal = document.getElementById('detailModal');
+            const content = document.getElementById('modalContent');
+            modal.classList.remove('hidden');
+            content.innerHTML = `<div class="flex flex-col items-center py-10"><div class="w-10 h-10 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div></div>`;
+
+            try {
+                const res = await fetch(`/api/admin/users/detail/${userId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+
+                let loanSection = `<div class="p-4 bg-gray-50 rounded-xl text-center text-xs text-gray-400 italic">Tidak ada pinjaman aktif.</div>`;
+
+                if (data.loan) {
+                    loanSection = `
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                            <div class="bg-emerald-50 p-4 rounded-2xl border border-emerald-100">
+                                <p class="text-[9px] font-bold text-emerald-600 uppercase">Total Pinjaman</p>
+                                <p class="text-lg font-black text-emerald-900">Rp ${Number(data.loan.jumlah_pinjaman).toLocaleString('id-ID')}</p>
+                            </div>
+                            <div class="bg-red-50 p-4 rounded-2xl border border-red-100">
+                                <p class="text-[9px] font-bold text-red-600 uppercase">Status</p>
+                                <p class="text-lg font-black text-red-700">${data.loan.status || 'Aktif'}</p>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                content.innerHTML = `
+                    <div class="space-y-6">
+                        <section>
+                            <h4 class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Biodata Warga</h4>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div><p class="text-[9px] text-gray-400 uppercase">NIK</p><p class="font-bold text-gray-800">${data.user.nik}</p></div>
+                                <div><p class="text-[9px] text-gray-400 uppercase">WhatsApp</p><p class="font-bold text-gray-800">${data.user.no_hp || '-'}</p></div>
+                                <div class="sm:col-span-2"><p class="text-[9px] text-gray-400 uppercase">Alamat Email</p><p class="font-bold text-gray-800">${data.user.email || '-'}</p></div>
+                                <div class="sm:col-span-2">
+                                    <p class="text-[9px] text-gray-400 uppercase mb-2">Foto KTP</p>
+                                    ${data.user.foto_ktp ? `<img src="/uploads/${data.user.foto_ktp}" class="w-full max-w-sm rounded-xl border shadow-sm cursor-pointer hover:opacity-90" onclick="openKtpModal('/uploads/${data.user.foto_ktp}')">` : '<p class="text-sm">-</p>'}
+                                </div>
+                            </div>
+                        </section>
+                        <hr class="border-gray-100">
+                        <section>
+                            <h4 class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Informasi Pinjaman</h4>
+                            ${loanSection}
+                        </section>
+                    </div>`;
+            } catch (err) {
+                content.innerHTML = `<p class="text-center text-red-500 text-sm">Gagal memuat detail data.</p>`;
+            }
+        }
+
+        function closeModal() { document.getElementById('detailModal').classList.add('hidden'); }
+        function openKtpModal(src) { 
+            document.getElementById('ktpModalImg').src = src; 
+            document.getElementById('ktpModal').classList.replace('hidden', 'flex'); 
+        }
+        function closeKtpModal() { document.getElementById('ktpModal').classList.replace('flex', 'hidden'); }
+
+        async function updateStatus(id, status) {
+            if (!confirm(`Ubah status warga menjadi ${status}?`)) return;
+            try {
+                const response = await fetch(`/api/admin/users/status/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ status })
+                });
+                if (response.ok) { alert("Status berhasil diperbarui"); fetchWarga(); }
+            } catch (err) { alert("Gagal memperbarui status"); }
+        }
+
+        function searchTable() {
+            const input = document.getElementById('searchWarga').value.toLowerCase();
+            const filtered = window.allWarga.filter(w => w.nama.toLowerCase().includes(input) || w.nik.includes(input));
+            renderWarga(filtered);
+        }
+
+        function exportWarga() {
+            if (!window.allWarga || window.allWarga.length === 0) return alert("Tidak ada data.");
+            const dataToExport = window.allWarga.map((w, index) => ({
+                "No": index + 1, "NIK": w.nik, "Nama": w.nama, "Saldo": w.saldo || 0, "Status": w.status_verifikasi
+            }));
+            const ws = XLSX.utils.json_to_sheet(dataToExport);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Warga");
+            XLSX.writeFile(wb, "Data_Warga_BUMDes.xlsx");
+        }
+
+        function logout() { localStorage.clear(); window.location.href = '../login.html'; }
+
+        fetchWarga();
+    </script>
+</body>
+</html>

@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Riwayat Pinjaman - BUMDes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        
+        /* Custom Scrollbar */
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+    </style>
+</head>
+
+<body class="bg-slate-50 flex min-h-screen">
+    <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 z-40 hidden lg:hidden" onclick="toggleSidebar()"></div>
+    <aside id="sidebar" class="fixed inset-y-0 left-0 w-72 bg-emerald-900 text-white z-50 transform -translate-x-full lg:translate-x-0 lg:static transition-transform duration-300 ease-in-out flex flex-col p-6 h-screen">
+        <div class="flex items-center justify-between mb-10 px-2">
+            <div class="flex items-center gap-3">
+                <div class="bg-emerald-400 p-2 rounded-xl text-emerald-900 shadow-lg shadow-emerald-500/20">
+                    <i class="fas fa-leaf text-xl"></i>
+                </div>
+                <span class="text-xl font-extrabold tracking-tight">Admin Panel</span>
+            </div>
+            <button onclick="toggleSidebar()" class="lg:hidden text-emerald-300"><i class="fas fa-times text-2xl"></i></button>
+        </div>
+        
+        <nav class="space-y-2 flex-1 overflow-y-auto custom-scrollbar pr-2">
+            <a href="dashboard.html" class="flex items-center gap-3 p-3.5 hover:bg-emerald-800/50 rounded-xl transition-all group">
+                <i class="fas fa-home opacity-70"></i> Dashboard
+            </a>
+            <a href="warga.html" class="flex items-center gap-3 p-3.5 hover:bg-emerald-800/50 rounded-xl transition-all group">
+                <i class="fas fa-users opacity-70 group-hover:opacity-100"></i> Data Warga
+            </a>
+            <div class="pt-4 pb-2 px-3 text-[10px] font-bold text-emerald-400 uppercase tracking-widest">Keuangan</div>
+            <a href="persetujuan-pinjaman.html" class="flex items-center gap-3 p-3.5 hover:bg-emerald-800/50 rounded-xl transition-all group">
+                <i class="fas fa-hand-holding-usd opacity-70 group-hover:opacity-100"></i> Persetujuan Pinjaman
+            </a>
+            <a href="simpanan.html" class="flex items-center gap-3 p-3.5 hover:bg-emerald-800/50 rounded-xl transition-all group">
+                <i class="fas fa-money-bill-wave"></i> Tarik Tunai
+            </a>
+            <a href="jurnal_kas.html" class="flex items-center gap-3 p-3.5 hover:bg-emerald-800/50 rounded-xl transition-all group">
+                <i class="fas fa-file-invoice-dollar opacity-70 group-hover:opacity-100"></i> Jurnal Kas
+            </a>
+            <a href="riwayat_pinjaman.html" class="flex items-center gap-3 p-3.5 bg-emerald-700 rounded-xl font-bold shadow-lg shadow-black/10 transition-all">
+                <i class="fas fa-history"></i> Riwayat Pinjaman
+            </a>
+            <div class="pt-4 pb-2 px-3 text-[10px] font-bold text-emerald-400 uppercase tracking-widest">Pesanan Dan Produk</div>
+            <a href="pesanan.html" class="flex items-center gap-3 p-3 hover:bg-emerald-800 rounded-xl transition">
+                <i class="fas fa-shopping-cart"></i> Pesanan Toko
+            </a>
+            <a href="produk.html" class="flex items-center gap-3 p-3 hover:bg-emerald-800 rounded-xl transition">
+                <i class="fas fa-box"></i> Produk
+            </a>
+        </nav>
+
+        <button onclick="logout()" class="mt-auto p-4 border-t border-emerald-800/50 text-emerald-300 flex items-center gap-3 hover:text-white hover:bg-red-500/10 rounded-xl transition duration-300">
+                <i class="fas fa-sign-out-alt"></i> 
+                <span class="font-bold text-sm uppercase tracking-wider">Keluar Sistem</span>
+            </button>
+        </div>
+    </aside>
+
+    <main class="flex-1 min-w-0 flex flex-col">
+        <header class="bg-white border-b border-gray-100 p-4 lg:p-10 sticky top-0 z-30">
+            <div class="flex items-center gap-4 lg:hidden mb-4">
+                <button onclick="toggleSidebar()" class="p-2 bg-slate-100 rounded-lg text-gray-600"><i class="fas fa-bars"></i></button>
+                <span class="font-bold text-gray-800">Riwayat Pinjaman</span>
+            </div>
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h1 class="text-xl md:text-2xl font-extrabold text-gray-800 tracking-tight">Riwayat Seluruh Pinjaman</h1>
+                    <p class="text-gray-500 text-xs md:text-sm">Daftar lengkap pengajuan kredit warga</p>
+                </div>
+                <select id="filterStatus" onchange="renderLoans()"
+                    class="w-full md:w-auto bg-white border border-gray-200 px-4 py-2.5 rounded-xl text-sm font-semibold shadow-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+                    <option value="all">Semua Status</option>
+                    <option value="pending">Menunggu (Pending)</option>
+                    <option value="approved">Berjalan (Approved)</option>
+                    <option value="lunas">Lunas</option>
+                    <option value="rejected">Ditolak</option>
+                </select>
+            </div>
+        </header>
+
+        <div class="p-4 lg:p-10">
+            <div class="bg-white rounded-2xl md:rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden">
+                
+                <div class="hidden md:block overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="bg-gray-50 text-[10px] uppercase text-gray-400 font-bold">
+                            <tr>
+                                <th class="px-6 py-5">Tanggal</th>
+                                <th class="px-6 py-5">Nama Warga</th>
+                                <th class="px-6 py-5">Jumlah</th>
+                                <th class="px-6 py-5">Tenor</th>
+                                <th class="px-6 py-5">Status</th>
+                                <th class="px-6 py-5 text-right">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="loanTableBody" class="divide-y divide-gray-100 text-sm text-gray-600"></tbody>
+                    </table>
+                </div>
+
+                <div id="loanCardList" class="md:hidden divide-y divide-gray-50">
+                    </div>
+                
+                <div id="emptyState" class="hidden p-20 text-center">
+                    <i class="fas fa-folder-open text-gray-200 text-5xl mb-4"></i>
+                    <p class="text-gray-400 font-medium">Tidak ada data pinjaman</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="modalDetail" class="fixed inset-0 bg-black/60 hidden z-[100] flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-[2rem] w-full max-w-lg overflow-hidden shadow-2xl scale-95 transition-transform">
+            <div class="p-6 md:p-8">
+                <div class="flex justify-between items-start mb-6">
+                    <div>
+                        <h2 class="text-xl font-bold text-gray-800">Detail Pinjaman</h2>
+                        <p id="detStatus" class="text-[10px] font-black uppercase tracking-widest mt-1"></p>
+                    </div>
+                    <button onclick="tutupModal()" class="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="flex justify-between border-b border-gray-50 pb-2">
+                        <span class="text-gray-400 text-sm">Nama Peminjam</span>
+                        <span id="detNama" class="font-bold text-gray-700"></span>
+                    </div>
+                    <div class="flex justify-between border-b border-gray-50 pb-2">
+                        <span class="text-gray-400 text-sm">Jumlah Pinjaman</span>
+                        <span id="detJumlah" class="font-bold text-emerald-600"></span>
+                    </div>
+                    <div class="flex justify-between border-b border-gray-50 pb-2">
+                        <span class="text-gray-400 text-sm">Tenor</span>
+                        <span id="detTenor" class="font-bold text-gray-700"></span>
+                    </div>
+                    <div class="pt-2">
+                        <span class="text-gray-400 text-sm block mb-1">Tujuan Pinjaman</span>
+                        <p id="detTujuan" class="text-sm text-gray-600 bg-gray-50 p-4 rounded-2xl italic"></p>
+                    </div>
+                </div>
+
+                <button onclick="tutupModal()" class="w-full mt-8 bg-emerald-600 text-white font-bold py-4 rounded-2xl hover:bg-emerald-700 transition shadow-lg shadow-emerald-200">
+                    Selesai
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let allLoans = [];
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('-translate-x-full');
+            document.getElementById('sidebarOverlay').classList.toggle('hidden');
+        }
+
+        async function fetchLoans() {
+            const token = localStorage.getItem('token');
+            try {
+                // Contoh dummy data jika API belum siap / untuk testing UI
+                // allLoans = [ {id: 1, tgl_pengajuan: '2023-10-01', nama: 'Budi Utomo', no_hp: '0812...', jumlah_pinjaman: 5000000, tenor_bulan: 12, status: 'approved', tujuan: 'Modal Usaha Warung'} ];
+                
+                const res = await fetch('/api/admin/loans', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                allLoans = await res.json();
+                renderLoans();
+            } catch (e) { console.error(e); }
+        }
+
+        function renderLoans() {
+            const filter = document.getElementById('filterStatus').value;
+            const filteredData = filter === 'all' ? allLoans : allLoans.filter(l => l.status === filter);
+            
+            const tableBody = document.getElementById('loanTableBody');
+            const cardList = document.getElementById('loanCardList');
+            const emptyState = document.getElementById('emptyState');
+
+            if(filteredData.length === 0) {
+                emptyState.classList.remove('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            // Render Table (Desktop)
+            tableBody.innerHTML = filteredData.map(loan => `
+                <tr class="hover:bg-gray-50 transition">
+                    <td class="px-6 py-5 whitespace-nowrap text-xs text-gray-400 font-medium">
+                        ${new Date(loan.tgl_pengajuan).toLocaleDateString('id-ID')}
+                    </td>
+                    <td class="px-6 py-5">
+                        <p class="font-bold text-gray-800">${loan.nama}</p>
+                        <p class="text-[10px] text-gray-400 font-normal">${loan.no_hp}</p>
+                    </td>
+                    <td class="px-6 py-5 font-bold text-emerald-600">
+                        Rp ${Number(loan.jumlah_pinjaman).toLocaleString('id-ID')}
+                    </td>
+                    <td class="px-6 py-5 text-gray-500 font-medium">${loan.tenor_bulan} Bln</td>
+                    <td class="px-6 py-5">${getStatusBadge(loan.status)}</td>
+                    <td class="px-6 py-5 text-right">
+                        <button onclick="lihatDetail(${loan.id})" class="bg-gray-100 text-gray-600 hover:bg-emerald-600 hover:text-white p-2 px-4 rounded-xl text-xs font-bold transition">
+                            Detail
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+
+            // Render Cards (Mobile/Android)
+            cardList.innerHTML = filteredData.map(loan => `
+                <div class="p-5 space-y-4">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-[10px] text-gray-400 font-bold uppercase tracking-tighter mb-1">${new Date(loan.tgl_pengajuan).toLocaleDateString('id-ID', {day:'numeric', month:'short', year:'numeric'})}</p>
+                            <h4 class="font-extrabold text-gray-800">${loan.nama}</h4>
+                            <p class="text-xs text-gray-400">${loan.no_hp}</p>
+                        </div>
+                        ${getStatusBadge(loan.status)}
+                    </div>
+                    
+                    <div class="flex justify-between items-end bg-slate-50 p-4 rounded-2xl border border-gray-100">
+                        <div>
+                            <p class="text-[9px] text-gray-400 font-bold uppercase mb-1">Total Pinjaman</p>
+                            <p class="text-lg font-black text-emerald-600 leading-none">Rp ${Number(loan.jumlah_pinjaman).toLocaleString('id-ID')}</p>
+                            <p class="text-[10px] text-gray-500 mt-1 font-medium italic">${loan.tenor_bulan} Bulan Tenor</p>
+                        </div>
+                        <button onclick="lihatDetail(${loan.id})" class="bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-xl text-[11px] font-bold shadow-sm active:scale-95 transition">
+                            Lihat Detail
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getStatusBadge(status) {
+            const style = {
+                pending: "bg-amber-100 text-amber-600",
+                approved: "bg-blue-100 text-blue-600",
+                lunas: "bg-emerald-100 text-emerald-600",
+                rejected: "bg-red-100 text-red-600"
+            };
+            return `<span class="px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider ${style[status] || 'bg-gray-100'}">${status}</span>`;
+        }
+
+        function lihatDetail(loanId) {
+            const loan = allLoans.find(l => l.id === loanId);
+            if (!loan) return;
+
+            document.getElementById('detNama').innerText = loan.nama;
+            document.getElementById('detJumlah').innerText = `Rp ${Number(loan.jumlah_pinjaman).toLocaleString('id-ID')}`;
+            document.getElementById('detTenor').innerText = `${loan.tenor_bulan} Bulan`;
+            document.getElementById('detTujuan').innerText = loan.tujuan || 'Tidak ada keterangan';
+
+            const badge = document.getElementById('detStatus');
+            badge.innerText = loan.status;
+            badge.className = `text-[10px] font-black uppercase tracking-widest mt-1 ${
+                loan.status === 'approved' ? 'text-blue-500' :
+                loan.status === 'rejected' ? 'text-red-500' :
+                loan.status === 'lunas' ? 'text-emerald-500' : 'text-amber-500'
+            }`;
+
+            document.getElementById('modalDetail').classList.remove('hidden');
+        }
+
+        function tutupModal() {
+            document.getElementById('modalDetail').classList.add('hidden');
+        }
+
+        fetchLoans();
+    </script>
+</body>
+</html>

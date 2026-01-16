@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tagihan Saya - BUMDes Digital</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-slate-50">
+
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto px-4 h-16 flex items-center gap-4">
+            <a href="home.html" class="text-gray-500 hover:text-emerald-600">
+                <i class="fas fa-arrow-left text-xl"></i>
+            </a>
+            <h1 class="text-lg font-bold text-gray-800">Riwayat & Tagihan</h1>
+        </div>
+    </nav>
+
+    <main class="max-w-4xl mx-auto px-4 py-8">
+        <div class="bg-emerald-900 rounded-[2rem] p-6 text-white mb-8 shadow-xl relative overflow-hidden">
+            <div class="relative z-10">
+                <p class="text-xs opacity-70 uppercase tracking-widest mb-1">Saldo Tersedia</p>
+                <h2 id="current-saldo" class="text-3xl font-bold">Rp 0</h2>
+            </div>
+            <i class="fas fa-wallet absolute right-6 top-1/2 -translate-y-1/2 text-white/10 text-6xl"></i>
+        </div>
+
+        <section>
+            <h3 class="font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <i class="fas fa-clock text-amber-500"></i> Pinjaman Aktif
+            </h3>
+            
+            <div id="loan-list" class="space-y-4">
+                <div class="text-center py-10 text-gray-400">
+                    <i class="fas fa-spinner fa-spin text-2xl mb-2"></i>
+                    <p>Memuat data tagihan...</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="paymentModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-end md:items-center justify-center p-4">
+        <div class="bg-white w-full max-w-md rounded-t-[2rem] md:rounded-[2rem] overflow-hidden shadow-2xl">
+            <div class="p-6 text-center">
+                <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-money-bill-wave text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800">Bayar Angsuran</h3>
+                <p class="text-gray-500 text-sm mt-1">Saldo akan dipotong otomatis untuk cicilan bulan ini.</p>
+                
+                <div class="my-6 p-4 bg-slate-50 rounded-2xl border border-dashed border-slate-300">
+                    <p class="text-xs text-gray-400 uppercase">Jumlah Bayar</p>
+                    <p id="pay-amount" class="text-2xl font-black text-emerald-600">Rp 0</p>
+                </div>
+
+                <button onclick="processPayment()" class="w-full bg-emerald-600 text-white py-4 rounded-2xl font-bold hover:bg-emerald-700 transition mb-3">Konfirmasi Pembayaran</button>
+                <button onclick="closeModal()" class="w-full text-gray-400 font-medium py-2">Batalkan</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="md:hidden fixed bottom-0 left-0 right-0 z-[100] px-4 pb-4">
+        <div
+            class="bg-white/80 backdrop-blur-lg border border-gray-200 rounded-[2rem] shadow-[0_-10px_25px_-5px_rgba(0,0,0,0.1)] flex justify-between items-center px-2 py-2">
+
+            <a href="home.html"
+                class="flex flex-col items-center justify-center w-16 h-14 text-gray-400 transition-all duration-300">
+                <div class="relative flex items-center justify-center">
+                    <i class="fas fa-home text-xl"></i>
+                    <span class="absolute -bottom-1 w-1 h-1 bg-emerald-600 rounded-full"></span>
+                </div>
+                <span class="text-[10px] font-bold mt-1 uppercase tracking-tighter">Home</span>
+            </a>
+
+            <a href="katalog.html"
+                class="flex flex-col items-center justify-center w-16 h-14 text-gray-400 hover:text-emerald-500 transition-all duration-300">
+                <i class="fas fa-store text-xl"></i>
+                <span class="text-[10px] font-medium mt-1 uppercase tracking-tighter">Toko</span>
+            </a>
+
+            <a href="simpanan.html" class="flex flex-col items-center justify-center -mt-8">
+                <div
+                    class="bg-emerald-600 text-white w-14 h-14 rounded-2xl shadow-lg shadow-emerald-200 flex items-center justify-center mb-1 border-4 border-white transform active:scale-90 transition-all duration-200">
+                    <i class="fas fa-plus text-xl"></i>
+                </div>
+                <span class="text-[10px] font-bold text-emerald-700 uppercase tracking-tighter">Top Up</span>
+            </a>
+
+            <a href="tagihan.html"
+                class="flex flex-col items-center justify-center w-16 h-14 text-emerald-600 hover:text-emerald-500 transition-all duration-300">
+                <i class="fas fa-file-invoice-dollar text-xl"></i>
+                <span class="text-[10px] font-medium mt-1 uppercase tracking-tighter">Tagihan</span>
+            </a>
+
+            <button onclick="toggleMenu()"
+                class="flex flex-col items-center justify-center w-16 h-14 text-gray-400 hover:text-emerald-500 transition-all duration-300">
+                <div class="grid grid-cols-2 gap-0.5">
+                    <div class="w-1.5 h-1.5 bg-current rounded-sm"></div>
+                    <div class="w-1.5 h-1.5 bg-current rounded-sm"></div>
+                    <div class="w-1.5 h-1.5 bg-current rounded-sm"></div>
+                    <div class="w-1.5 h-1.5 bg-current rounded-sm"></div>
+                </div>
+                <span class="text-[10px] font-medium mt-1 uppercase tracking-tighter leading-none pt-1">Menu</span>
+            </button>
+        </div>
+    </div>
+
+    <style>
+        @media (max-width: 768px) {
+            body {
+                padding-bottom: 90px;
+            }
+        }
+
+        /* Animasi sederhana untuk icon */
+        .active-nav {
+            color: #059669 !important;
+            /* emerald-600 */
+        }
+    </style>
+
+    <div id="mobile-menu-modal" class="fixed inset-0 z-[110] hidden">
+        <div class="absolute inset-0 bg-emerald-950/40 backdrop-blur-md transition-opacity"></div>
+
+        <div class="absolute bottom-0 left-0 right-0 bg-white rounded-t-[3rem] p-8 transform translate-y-full transition-transform duration-300 ease-out shadow-2xl"
+            id="modal-content">
+            <div class="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-8"></div>
+
+            <div class="flex justify-between items-center mb-8">
+                <h3 class="text-2xl font-black text-gray-800">Semua Layanan</h3>
+                <button onclick="toggleMenu()"
+                    class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-500">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="grid grid-cols-3 gap-6 mb-10">
+                <a href="simpanan.html" class="flex flex-col items-center gap-2">
+                    <div
+                        class="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-2xl shadow-sm">
+                        <i class="fas fa-piggy-bank"></i></div>
+                    <span class="text-xs font-bold text-gray-600">Simpanan</span>
+                </a>
+                <a href="pinjaman.html" class="flex flex-col items-center gap-2">
+                    <div
+                        class="w-16 h-16 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center text-2xl shadow-sm">
+                        <i class="fas fa-hand-holding-usd"></i></div>
+                    <span class="text-xs font-bold text-gray-600">Pinjaman</span>
+                </a>
+                <a href="tagihan.html" class="flex flex-col items-center gap-2">
+                    <div
+                        class="w-16 h-16 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center text-2xl shadow-sm">
+                        <i class="fas fa-file-invoice"></i></div>
+                    <span class="text-xs font-bold text-gray-600">Tagihan</span>
+                </a>
+                <a href="katalog.html" class="flex flex-col items-center gap-2">
+                    <div
+                        class="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center text-2xl shadow-sm">
+                        <i class="fas fa-store"></i></div>
+                    <span class="text-xs font-bold text-gray-600">Toko Desa</span>
+                </a>
+                <a href="pesanan-saya.html" class="flex flex-col items-center gap-2">
+                    <div
+                        class="w-16 h-16 bg-rose-50 text-rose-600 rounded-2xl flex items-center justify-center text-2xl shadow-sm">
+                        <i class="fas fa-shopping-bag"></i></div>
+                    <span class="text-xs font-bold text-gray-600">Pesanan</span>
+                </a>
+                <a href="riwayat.html" class="flex flex-col items-center gap-2">
+                    <div
+                        class="w-16 h-16 bg-slate-100 text-slate-600 rounded-2xl flex items-center justify-center text-2xl shadow-sm">
+                        <i class="fas fa-history"></i></div>
+                    <span class="text-xs font-bold text-gray-600">Mutasi</span>
+                </a>
+            </div>
+
+            <button onclick="logout()"
+                class="w-full py-4 bg-red-50 text-red-600 rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-red-100 transition">
+                <i class="fas fa-sign-out-alt"></i> Keluar dari Akun
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const token = localStorage.getItem('token');
+
+        // 1. Validasi Akses
+        if (!token) window.location.href = '/login.html';
+        let selectedLoanId = null;
+        let monthlyAmount = 0;
+
+        async function init() {
+            if (!token) window.location.href = '/login.html';
+            await fetchProfile();
+            await fetchMyLoans();
+        }
+
+        async function fetchProfile() {
+            const res = await fetch('/api/profile', { headers: { 'Authorization': `Bearer ${token}` }});
+            const data = await res.json();
+            document.getElementById('current-saldo').innerText = `Rp ${Number(data.saldo).toLocaleString('id-ID')}`;
+        }
+
+        async function fetchMyLoans() {
+            try {
+                const res = await fetch('/api/my-loans', { 
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const loans = await res.json();
+                renderLoans(loans);
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        function renderLoans(loans) {
+            const container = document.getElementById('loan-list');
+            if (loans.length === 0) {
+                container.innerHTML = `<div class="bg-white p-8 rounded-3xl text-center text-gray-400 border border-dashed">Belum ada riwayat pinjaman.</div>`;
+                return;
+            }
+
+            container.innerHTML = loans.map(l => {
+                const statusColor = {
+                    'pending': 'bg-amber-100 text-amber-700',
+                    'approved': 'bg-blue-100 text-blue-700',
+                    'rejected': 'bg-red-100 text-red-700',
+                    'lunas': 'bg-emerald-100 text-emerald-700'
+                };
+
+                // Di dalam fungsi renderLoans(loans)
+// Tambahkan baris kode ini di dalam map:
+
+return `
+<div class="bg-white p-5 rounded-3xl shadow-sm border border-gray-100">
+    <div class="flex justify-between items-center bg-slate-50 p-3 rounded-2xl mb-4">
+        <div>
+            <p class="text-[10px] text-gray-400 uppercase font-bold">Progress Cicilan</p>
+            <p class="text-sm font-bold text-gray-800">${l.status === 'lunas' ? 'LUNAS' : 'Belum Lunas'}</p>
+        </div>
+        <div class="text-right">
+            <p class="text-[10px] text-gray-400 uppercase font-bold">Terbayar</p>
+            <p class="text-sm font-bold text-emerald-600">${l.status === 'lunas' ? l.tenor_bulan : 'Cek Detail'} / ${l.tenor_bulan} Bln</p>
+        </div>
+    </div>
+
+    ${l.status === 'approved' ? `
+        <button onclick="openPayModal(${l.id}, ${l.angsuran_bulanan})" class="w-full bg-slate-900 text-white py-3 rounded-xl font-bold text-sm hover:bg-emerald-600 transition">
+            Bayar Angsuran
+        </button>
+    ` : ''}
+</div>
+`;
+            }).join('');
+        }
+
+        function openPayModal(id, amount) {
+            selectedLoanId = id;
+            monthlyAmount = amount;
+            document.getElementById('pay-amount').innerText = `Rp ${Number(amount).toLocaleString('id-ID')}`;
+            document.getElementById('paymentModal').classList.remove('hidden');
+        }
+
+        function closeModal() { document.getElementById('paymentModal').classList.add('hidden'); }
+
+        async function processPayment() {
+            try {
+                const res = await fetch('/api/loans/pay', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ loanId: selectedLoanId, amount: monthlyAmount })
+                });
+
+                const data = await res.json();
+                if (res.ok) {
+                    alert("Pembayaran Berhasil!");
+                    location.reload();
+                } else {
+                    alert(data.message || "Gagal bayar");
+                }
+            } catch (err) {
+                alert("Terjadi kesalahan jaringan.");
+            }
+        }
+
+        function toggleMenu() {
+            const modal = document.getElementById('mobile-menu-modal');
+            const content = document.getElementById('modal-content');
+
+            if (modal.classList.contains('hidden')) {
+                // Buka Modal
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    content.classList.remove('translate-y-full');
+                }, 10);
+                document.body.style.overflow = 'hidden'; // Lock scroll body
+            } else {
+                // Tutup Modal
+                content.classList.add('translate-y-full');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 300);
+                document.body.style.overflow = 'auto'; // Unlock scroll body
+            }
+        }
+
+        // Tutup modal jika user mengklik bagian luar modal (backdrop)
+        document.getElementById('mobile-menu-modal').addEventListener('click', function (e) {
+            if (e.target === this.firstElementChild) {
+                toggleMenu();
+            }
+        });
+
+        init();
+    </script>
+</body>
+</html>

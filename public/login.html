@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - BUMDes Digital</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-emerald-50 h-screen flex items-center justify-center p-4">
+
+    <div class="bg-white w-full max-w-5xl rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row min-h-[600px]" data-aos="zoom-in">
+        
+        <div class="hidden md:flex md:w-1/2 bg-emerald-600 p-12 flex-col justify-between text-white relative overflow-hidden">
+            <div class="relative z-10">
+                <div class="flex items-center gap-2 mb-8">
+                    <i class="fas fa-leaf text-3xl"></i>
+                    <span class="text-2xl font-bold">BUMDesDigital</span>
+                </div>
+                <h2 class="text-4xl font-bold leading-tight mb-4">Akses Layanan Desa dalam Satu Genggaman.</h2>
+                <p class="text-emerald-100">Pantau simpanan, ajukan pinjaman, atau pasarkan produk UMKM Anda dengan mudah.</p>
+            </div>
+            
+            <div class="relative z-10 bg-white/10 backdrop-blur-lg p-6 rounded-2xl border border-white/20">
+                <p class="italic text-sm">"Sistem ini sangat membantu kami mengelola laporan keuangan BUMDes secara real-time."</p>
+                <p class="mt-4 font-bold text-sm">— Pengurus Desa</p>
+            </div>
+
+            <div class="absolute -bottom-20 -left-20 w-64 h-64 bg-emerald-500 rounded-full opacity-50"></div>
+        </div>
+
+        <div class="w-full md:w-1/2 p-8 md:p-16 flex flex-col justify-center">
+            <div id="loginFormContainer" class="space-y-6">
+                <div>
+                    <h2 class="text-3xl font-bold text-gray-800">Selamat Datang</h2>
+                    <p class="text-gray-500 mt-2">Silakan masuk ke akun Anda</p>
+                </div>
+
+                <div class="flex bg-gray-100 p-1 rounded-xl">
+                    <button type="button" onclick="setRole('warga')" id="btnWarga" class="role-btn flex-1 py-2 rounded-lg text-sm font-bold transition-all bg-white shadow-sm text-emerald-600">Warga</button>
+                    <button type="button" onclick="setRole('admin')" id="btnAdmin" class="role-btn flex-1 py-2 rounded-lg text-sm font-bold transition-all text-gray-500 hover:text-emerald-600">Admin</button>
+                </div>
+
+                <form id="formLogin" class="space-y-4">
+                    <input type="hidden" id="inputRole" value="warga">
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">NIK atau Email</label>
+                        <div class="relative">
+                            <i class="fas fa-user absolute left-3 top-3.5 text-gray-400"></i>
+                            <input type="text" id="identity" required class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 transition outline-none" placeholder="Masukkan ID Anda">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Kata Sandi</label>
+                        <div class="relative">
+                            <i class="fas fa-lock absolute left-3 top-3.5 text-gray-400"></i>
+                            <input type="password" id="password" required class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 transition outline-none" placeholder="••••••••">
+                        </div>
+                    </div>
+
+                    <div id="error-message" class="hidden text-red-500 text-xs font-bold bg-red-50 p-3 rounded-lg border border-red-100">
+                        </div>
+
+                    <button type="submit" id="submitBtn" class="w-full bg-emerald-600 text-white py-4 rounded-xl font-bold hover:bg-emerald-700 transition transform hover:-translate-y-1 shadow-lg shadow-emerald-200 flex justify-center items-center">
+                        <span id="btnText">Masuk Sekarang</span>
+                    </button>
+                </form>
+
+                <p class="text-center text-gray-600 text-sm">
+                    Belum punya akun? <a href="register.html" class="text-emerald-600 font-bold hover:underline">Daftar Sekarang</a>
+                </p>
+                <p class="text-center text-gray-600 text-sm">
+                    Kembali ke <a href="/" class="text-emerald-600 font-bold hover:underline">Beranda</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init();
+        
+        // 1. Logika Switch Role
+        function setRole(role) {
+            document.getElementById('inputRole').value = role;
+            const btnWarga = document.getElementById('btnWarga');
+            const btnAdmin = document.getElementById('btnAdmin');
+            
+            if (role === 'warga') {
+                btnWarga.className = 'role-btn flex-1 py-2 rounded-lg text-sm font-bold transition-all bg-white shadow-sm text-emerald-600';
+                btnAdmin.className = 'role-btn flex-1 py-2 rounded-lg text-sm font-bold transition-all text-gray-500 hover:text-emerald-600';
+            } else {
+                btnAdmin.className = 'role-btn flex-1 py-2 rounded-lg text-sm font-bold transition-all bg-white shadow-sm text-emerald-600';
+                btnWarga.className = 'role-btn flex-1 py-2 rounded-lg text-sm font-bold transition-all text-gray-500 hover:text-emerald-600';
+            }
+        }
+
+        // 2. Logika Submit Fetch API
+        document.getElementById('formLogin').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const btn = document.getElementById('submitBtn');
+            const btnText = document.getElementById('btnText');
+            const errorDiv = document.getElementById('error-message');
+            
+            // UI Loading State
+            btn.disabled = true;
+            btnText.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
+            errorDiv.classList.add('hidden');
+
+            const payload = {
+                identity: document.getElementById('identity').value,
+                password: document.getElementById('password').value,
+                role: document.getElementById('inputRole').value
+            };
+
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Simpan Token & Data User
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('role', data.role);
+                    localStorage.setItem('userName', data.name);
+
+                    // Redirect sesuai role
+                    if (data.role === 'admin') {
+                        window.location.href = '/admin/dashboard.html';
+                    } else {
+                        window.location.href = '/user/home.html';
+                    }
+                } else {
+                    // Tampilkan Pesan Error
+                    errorDiv.innerText = data.message || 'Login gagal, periksa kembali data Anda.';
+                    errorDiv.classList.remove('hidden');
+                }
+            } catch (err) {
+                errorDiv.innerText = 'Gagal terhubung ke server.';
+                errorDiv.classList.remove('hidden');
+            } finally {
+                btn.disabled = false;
+                btnText.innerText = 'Masuk Sekarang';
+            }
+        });
+    </script>
+</body>
+</html>

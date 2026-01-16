@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - BUMDes Digital</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Custom Scrollbar */
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-slate-50 flex min-h-screen">
+
+    <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 z-40 hidden lg:hidden" onclick="toggleSidebar()"></div>
+
+    <aside id="sidebar" class="fixed inset-y-0 left-0 w-72 bg-emerald-900 text-white z-50 transform -translate-x-full lg:translate-x-0 lg:static transition-transform duration-300 ease-in-out flex flex-col p-6 h-screen overflow-hidden">
+        <div class="flex items-center justify-between mb-10 px-2">
+            <div class="flex items-center gap-3">
+                <div class="bg-emerald-400 p-2 rounded-xl text-emerald-900 shadow-lg shadow-emerald-500/20">
+                    <i class="fas fa-leaf text-xl"></i>
+                </div>
+                <span class="text-xl font-extrabold tracking-tight">Admin Panel</span>
+            </div>
+            <button onclick="toggleSidebar()" class="lg:hidden text-emerald-300 hover:text-white">
+                <i class="fas fa-times text-2xl"></i>
+            </button>
+        </div>
+        
+        <nav class="space-y-2 flex-1 overflow-y-auto custom-scrollbar pr-2">
+            <a href="dashboard.html" class="flex items-center gap-3 p-3.5 bg-emerald-700 rounded-xl font-bold shadow-lg shadow-black/10 transition-all">
+                <i class="fas fa-home opacity-70"></i> Dashboard
+            </a>
+            <a href="warga.html" class="flex items-center gap-3 p-3.5 hover:bg-emerald-800/50 rounded-xl transition-all group">
+                <i class="fas fa-users opacity-70 group-hover:opacity-100"></i> Data Warga
+            </a>
+            <div class="pt-4 pb-2 px-3 text-[10px] font-bold text-emerald-400 uppercase tracking-widest">Keuangan</div>
+            <a href="persetujuan-pinjaman.html" class="flex items-center gap-3 p-3.5 hover:bg-emerald-800/50 rounded-xl transition-all group">
+                <i class="fas fa-hand-holding-usd opacity-70 group-hover:opacity-100"></i> Persetujuan Pinjaman
+            </a>
+            <a href="simpanan.html" class="flex items-center gap-3 p-3.5 hover:bg-emerald-800/50 rounded-xl transition-all group">
+                <i class="fas fa-money-bill-wave"></i> Tarik Tunai
+            </a>
+            <a href="jurnal_kas.html" class="flex items-center gap-3 p-3.5 hover:bg-emerald-800/50 rounded-xl transition-all group">
+                <i class="fas fa-file-invoice-dollar opacity-70 group-hover:opacity-100"></i> Jurnal Kas
+            </a>
+            <a href="riwayat_pinjaman.html" class="flex items-center gap-3 p-3 hover:bg-emerald-800 rounded-xl transition">
+                <i class="fas fa-history"></i> Riwayat Pinjaman
+            </a>
+            <div class="pt-4 pb-2 px-3 text-[10px] font-bold text-emerald-400 uppercase tracking-widest">Pesanan Dan Produk</div>
+            <a href="pesanan.html" class="flex items-center gap-3 p-3 hover:bg-emerald-800 rounded-xl transition">
+                <i class="fas fa-shopping-cart"></i> Pesanan Toko
+            </a>
+            <a href="produk.html" class="flex items-center gap-3 p-3 hover:bg-emerald-800 rounded-xl transition">
+                <i class="fas fa-box"></i> Produk
+            </a>
+        </nav>
+
+        <button onclick="logout()" class="flex items-center gap-3 p-3.5 text-emerald-300 hover:text-white hover:bg-red-500/10 rounded-xl transition-all mt-auto border-t border-emerald-800 pt-6">
+            <i class="fas fa-sign-out-alt"></i> Keluar Sistem
+        </button>
+    </aside>
+
+    <main class="flex-1 w-full overflow-x-hidden">
+        <header class="sticky top-0 bg-white/80 backdrop-blur-md z-30 px-4 py-4 md:px-10 md:py-6 border-b border-gray-100 mb-6 lg:mb-10">
+            <div class="flex justify-between items-center max-w-7xl mx-auto">
+                <div class="flex items-center gap-4">
+                    <button onclick="toggleSidebar()" class="lg:hidden bg-white p-2 rounded-lg shadow-sm border border-gray-200">
+                        <i class="fas fa-bars text-gray-700"></i>
+                    </button>
+                    <div>
+                        <h1 class="text-lg md:text-2xl font-bold text-gray-800 leading-tight">Ringkasan BUMDes</h1>
+                        <p id="current-date" class="text-gray-500 text-[10px] md:text-sm italic"></p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-3 md:gap-4">
+                    <div class="hidden sm:block text-right">
+                        <p class="text-sm font-bold text-gray-800">Admin Utama</p>
+                        <p class="text-[10px] text-emerald-600 font-bold uppercase tracking-widest">Administrator</p>
+                    </div>
+                    <img src="https://ui-avatars.com/api/?name=Admin+BUMDes&background=065f46&color=fff" class="w-10 h-10 md:w-12 md:h-12 rounded-full border-2 border-white shadow-md">
+                </div>
+            </div>
+        </header>
+
+        <div class="px-4 md:px-10 max-w-7xl mx-auto pb-10">
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8 md:mb-10">
+                <div class="bg-white p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] shadow-sm border border-gray-100">
+                    <div class="w-10 h-10 md:w-12 md:h-12 bg-blue-50 text-blue-600 rounded-xl md:rounded-2xl flex items-center justify-center mb-3 md:mb-4"><i class="fas fa-user-friends"></i></div>
+                    <p class="text-gray-400 text-[10px] md:text-xs font-bold uppercase tracking-wider">Warga</p>
+                    <h3 id="stat-warga" class="text-xl md:text-2xl font-black text-gray-800">0</h3>
+                </div>
+                <div class="bg-white p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] shadow-sm border border-gray-100">
+                    <div class="w-10 h-10 md:w-12 md:h-12 bg-emerald-50 text-emerald-600 rounded-xl md:rounded-2xl flex items-center justify-center mb-3 md:mb-4"><i class="fas fa-wallet"></i></div>
+                    <p class="text-gray-400 text-[10px] md:text-xs font-bold uppercase tracking-wider">Total Kas</p>
+                    <h3 id="stat-kas" class="text-xl md:text-2xl font-black text-gray-800 leading-tight">Rp 0</h3>
+                </div>
+                <div class="bg-white p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] shadow-sm border border-gray-100">
+                    <div class="w-10 h-10 md:w-12 md:h-12 bg-amber-50 text-amber-600 rounded-xl md:rounded-2xl flex items-center justify-center mb-3 md:mb-4"><i class="fas fa-clock"></i></div>
+                    <p class="text-gray-400 text-[10px] md:text-xs font-bold uppercase tracking-wider">Pending</p>
+                    <h3 id="stat-pending" class="text-xl md:text-2xl font-black text-gray-800">0</h3>
+                </div>
+                <div class="bg-white p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] shadow-sm border border-gray-100">
+                    <div class="w-10 h-10 md:w-12 md:h-12 bg-purple-50 text-purple-600 rounded-xl md:rounded-2xl flex items-center justify-center mb-3 md:mb-4"><i class="fas fa-shopping-basket"></i></div>
+                    <p class="text-gray-400 text-[10px] md:text-xs font-bold uppercase tracking-wider">Pesanan</p>
+                    <h3 id="stat-orders" class="text-xl md:text-2xl font-black text-gray-800">0</h3>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 xl:grid-cols-3 gap-6 md:gap-8">
+                <div class="xl:col-span-2 bg-white rounded-[1.5rem] md:rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="p-5 md:p-6 border-b border-gray-50 flex justify-between items-center">
+                        <h3 class="font-bold text-gray-800 text-sm md:text-base">Antrean Pinjaman</h3>
+                        <a href="admin-pinjaman.html" class="text-emerald-600 text-[10px] md:text-xs font-bold hover:underline">Kelola Semua</a>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left min-w-[500px]">
+                            <thead class="bg-gray-50 text-[10px] uppercase text-gray-400 font-bold">
+                                <tr>
+                                    <th class="px-6 py-4">Warga</th>
+                                    <th class="px-6 py-4">Nominal</th>
+                                    <th class="px-6 py-4 text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="loan-table" class="divide-y divide-gray-50 text-sm">
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-[1.5rem] md:rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="p-5 md:p-6 border-b border-gray-50">
+                        <h3 class="font-bold text-gray-800 text-sm md:text-base">Aktivitas Simpanan</h3>
+                    </div>
+                    <div id="savings-list" class="p-5 md:p-6 space-y-4">
+                        </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Toggle Sidebar Function
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        }
+
+        // Script Data Bawaan Anda
+        const token = localStorage.getItem('token');
+        document.getElementById('current-date').innerText = `Update: ${new Date().toLocaleDateString('id-ID', { day:'numeric', month:'short', year:'numeric' })}`;
+
+        async function fetchDashboardStats() {
+            try {
+                const res = await fetch('/api/admin/stats', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                
+                document.getElementById('stat-warga').innerText = data.totalWarga;
+                document.getElementById('stat-kas').innerText = `Rp ${Number(data.totalKas).toLocaleString('id-ID')}`;
+                document.getElementById('stat-pending').innerText = data.pendingLoans;
+                document.getElementById('stat-orders').innerText = data.pendingOrders;
+
+                renderLoans(data.recentLoans);
+                renderSavings(data.recentSavings);
+            } catch (err) {
+                console.error("Gagal memuat statistik");
+            }
+        }
+
+        function renderLoans(loans) {
+            const container = document.getElementById('loan-table');
+            if(!loans || loans.length === 0) {
+                container.innerHTML = `<tr><td colspan="3" class="p-10 text-center text-gray-400 text-xs italic">Tidak ada antrean pinjaman</td></tr>`;
+                return;
+            }
+            container.innerHTML = loans.map(l => `
+                <tr class="hover:bg-slate-50 transition">
+                    <td class="px-6 py-4">
+                        <p class="font-bold text-gray-800">${l.nama}</p>
+                        <p class="text-[10px] text-gray-400 truncate max-w-[150px]">${l.keperluan}</p>
+                    </td>
+                    <td class="px-6 py-4 font-bold text-emerald-600 whitespace-nowrap">Rp ${Number(l.jumlah_pinjaman).toLocaleString('id-ID')}</td>
+                    <td class="px-6 py-4 text-center">
+                        <a href="admin-pinjaman.html" class="bg-slate-900 text-white px-3 py-1.5 rounded-lg text-[10px] font-bold inline-block">Proses</a>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function renderSavings(savings) {
+            const container = document.getElementById('savings-list');
+            if(!savings || savings.length === 0) {
+                container.innerHTML = `<p class="text-center text-gray-400 text-xs py-10 italic">Tidak ada pengajuan simpanan</p>`;
+                return;
+            }
+            container.innerHTML = savings.map(s => `
+                <div class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-gray-100 transition-hover hover:border-emerald-200">
+                    <div class="min-w-0 pr-2">
+                        <p class="text-sm font-bold text-gray-800 truncate">${s.nama}</p>
+                        <p class="text-[10px] font-bold ${s.tipe === 'setor' ? 'text-blue-600' : 'text-amber-600'} uppercase">${s.tipe}</p>
+                    </div>
+                    <div class="text-right shrink-0">
+                        <p class="text-xs font-bold text-gray-800">Rp ${Number(s.jumlah).toLocaleString('id-ID')}</p>
+                        <a href="admin-simpanan.html" class="text-[10px] text-emerald-600 font-bold hover:underline">Verifikasi</a>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = '../login.html';
+        }
+
+        // Cek login admin (Hapus komentar jika sudah ada backend)
+        // if(localStorage.getItem('role') !== 'admin') window.location.href = '../login.html';
+        fetchDashboardStats();
+    </script>
+</body>
+</html>
