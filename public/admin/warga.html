@@ -273,7 +273,7 @@
                                 <div class="sm:col-span-2"><p class="text-[9px] text-gray-400 uppercase">Alamat Email</p><p class="font-bold text-gray-800">${data.user.email || '-'}</p></div>
                                 <div class="sm:col-span-2">
                                     <p class="text-[9px] text-gray-400 uppercase mb-2">Foto KTP</p>
-                                    ${data.user.foto_ktp ? `<img src="/uploads/${data.user.foto_ktp}" class="w-full max-w-sm rounded-xl border shadow-sm cursor-pointer hover:opacity-90" onclick="openKtpModal('/uploads/${data.user.foto_ktp}')">` : '<p class="text-sm">-</p>'}
+                                    ${data.user.foto_ktp ? `<img src="${data.user.foto_ktp}" class="w-full max-w-sm rounded-xl border shadow-sm cursor-pointer hover:opacity-90" onclick="openKtpModal('${data.user.foto_ktp}')">` : '<p class="text-sm">-</p>'}
                                 </div>
                             </div>
                         </section>
