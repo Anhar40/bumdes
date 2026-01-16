@@ -20,7 +20,7 @@ const PORT = process.env.PORT || 3000;
 const SECRET_KEY = 'BUMDES_SUPER_SECRET_2026';
 
 app.use(express.json());
-app.use(express.static('public/'));
+app.use(express.static('public'));
 
 const db = mysql.createConnection({
     host: process.env.DB_HOST,
