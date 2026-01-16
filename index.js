@@ -569,7 +569,8 @@ app.get('/api/admin/loans', authenticateToken, isAdmin, async (req, res) => {
 });
 
 
-// 2. Update Status Pinjaman (Ditambah middleware isAdmin)
+// 2. Update Status Pinjaman (Ditambah middleware isAdmin) // Pastikan sudah di-require di atas
+
 app.put('/api/admin/loans/:id/status', authenticateToken, isAdmin, async (req, res) => {
     const { status, catatan_admin } = req.body;
     const loanId = req.params.id;
@@ -578,15 +579,17 @@ app.put('/api/admin/loans/:id/status', authenticateToken, isAdmin, async (req, r
         return res.status(400).json({ message: "Status tidak valid" });
     }
 
-    // Ambil client dari pool untuk menjalankan transaksi
     const client = await db.connect();
 
     try {
-        await client.query('BEGIN'); // Mulai transaksi
+        await client.query('BEGIN');
 
-        // 1. Ambil data pinjaman
+        // 1. Ambil data pinjaman SEKALIGUS data subscription user
         const loanResult = await client.query(
-            "SELECT user_id, jumlah_pinjaman FROM loans WHERE id = $1", 
+            `SELECT l.user_id, l.jumlah_pinjaman, u.push_subscription, u.nama 
+             FROM loans l 
+             JOIN users u ON l.user_id = u.id 
+             WHERE l.id = $1`, 
             [loanId]
         );
 
@@ -594,28 +597,39 @@ app.put('/api/admin/loans/:id/status', authenticateToken, isAdmin, async (req, r
             throw new Error("Pinjaman tidak ditemukan");
         }
 
-        const { user_id, jumlah_pinjaman } = loanResult.rows[0];
+        const { user_id, jumlah_pinjaman, push_subscription, nama } = loanResult.rows[0];
 
-        // 2. Update status pinjaman & catatan admin
+        // 2. Update status pinjaman
         await client.query(
             "UPDATE loans SET status = $1, catatan_admin = $2 WHERE id = $3",
             [status, catatan_admin || null, loanId]
         );
 
-        // 3. Logika Jika Disetujui (Approved)
+        // 3. Logika Jika Disetujui
         if (status === 'approved') {
-            // Tambahkan saldo ke user
             await client.query(
                 "UPDATE users SET saldo = saldo + $1 WHERE id = $2",
                 [jumlah_pinjaman, user_id]
             );
-
-            // OPTIONAL: Anda bisa menambahkan pencatatan Jurnal Kas Keluar di sini
-            // agar pembukuan BUMDes otomatis sinkron.
         }
 
-        await client.query('COMMIT'); // Simpan semua perubahan
-        
+        await client.query('COMMIT'); 
+
+        // --- PROSES KIRIM NOTIFIKASI (Di luar Transaksi agar tidak menghambat DB) ---
+        if (push_subscription) {
+            const payload = JSON.stringify({
+                title: status === 'approved' ? "Pinjaman Disetujui! 🎉" : "Update Pengajuan Pinjaman",
+                body: status === 'approved' 
+                    ? `Halo ${nama}, pinjaman Rp ${Number(jumlah_pinjaman).toLocaleString('id-ID')} telah cair ke saldo Anda.`
+                    : `Mohon maaf ${nama}, pengajuan pinjaman Anda belum dapat disetujui. Cek catatan admin.`,
+                url: "/tagihan.html" // Arahkan warga ke halaman riwayat/tagihan
+            });
+
+            // Kirim secara asynchronous (tidak perlu ditunggu/await jika tidak ingin menghambat response)
+            webPush.sendNotification(push_subscription, payload)
+                .catch(err => console.error("Gagal kirim notif push:", err));
+        }
+
         res.json({ 
             message: status === 'approved' 
                 ? "Pinjaman disetujui & saldo warga telah bertambah" 
@@ -623,13 +637,10 @@ app.put('/api/admin/loans/:id/status', authenticateToken, isAdmin, async (req, r
         });
 
     } catch (error) {
-        await client.query('ROLLBACK'); // Batalkan jika ada satu langkah yang gagal
-        console.error("Transaction Error:", error.message);
-        res.status(error.message === "Pinjaman tidak ditemukan" ? 404 : 500).json({ 
-            error: error.message 
-        });
+        await client.query('ROLLBACK');
+        res.status(500).json({ error: error.message });
     } finally {
-        client.release(); // PENTING: Kembalikan koneksi ke pool agar tidak hang
+        client.release();
     }
 });
 
