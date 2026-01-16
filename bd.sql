@@ -8,7 +8,7 @@ CREATE TABLE users (
     password VARCHAR(255) NOT NULL,
     alamat TEXT,
     no_hp VARCHAR(15),
-    foto_ktp VARCHAR(255),
+    foto_ktp LONGTEXT,
     saldo DECIMAL(15,2) DEFAULT 0.00,
     role ENUM('warga', 'admin') DEFAULT 'warga',
     status_verifikasi ENUM('pending', 'verified', 'rejected') DEFAULT 'pending',
