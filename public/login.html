@@ -78,6 +78,7 @@
             </div>
         </div>
     </div>
+    <script src="/js/app.js"></script>
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
@@ -131,6 +132,7 @@
                     localStorage.setItem('token', data.token);
                     localStorage.setItem('role', data.role);
                     localStorage.setItem('userName', data.name);
+                    requestNotificationPermission();
 
                     // Redirect sesuai role
                     if (data.role === 'admin') {

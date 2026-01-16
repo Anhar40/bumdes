@@ -142,6 +142,7 @@
             </div>
         </div>
     </main>
+    <script src="/js/app.js"></script>
 
     <script>
         // Toggle Sidebar Function
@@ -219,6 +220,7 @@
             localStorage.clear();
             window.location.href = '../login.html';
         }
+        requestNotificationPermission();
 
         // Cek login admin (Hapus komentar jika sudah ada backend)
         // if(localStorage.getItem('role') !== 'admin') window.location.href = '../login.html';

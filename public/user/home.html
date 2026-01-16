@@ -281,15 +281,11 @@
             </button>
         </div>
     </div>
-    <button id="btn-notif" onclick="requestNotificationPermission()">
-        Aktifkan Notifikasi
-    </button>
-
     <script src="/js/app.js"></script>
-
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
+        
         AOS.init();
         const token = localStorage.getItem('token');
 
@@ -421,6 +417,7 @@
         });
 
         // Inisialisasi awal
+        requestNotificationPermission();
         fetchUserData();
         fetchProducts();
         updateCartCount();
