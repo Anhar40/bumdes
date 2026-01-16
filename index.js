@@ -9,6 +9,8 @@ const path = require('path');
 const midtransClient = require('midtrans-client');
 const crypto = require('crypto');
 const sharp = require('sharp');
+const cors = require('cors');
+
 
 const snap = new midtransClient.Snap({
     isProduction: false,
@@ -21,7 +23,10 @@ const SECRET_KEY = process.env.SECRET_KEY;
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
-
+app.use(cors({
+  origin: 'https://bumdes-ochre.vercel.app', // sementara, untuk testing
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+}));
 // Gunakan createPool, bukan createConnection
 const db = mysql.createPool({
     host: process.env.DB_HOST,
@@ -328,16 +333,27 @@ app.post('/api/admin/products', authenticateToken, upload.single('foto'), async 
 });
 
 // 1. Ambil Semua Produk (Untuk Katalog Warga & Tabel Admin)
-app.get('/api/products', (req, res) => {
-    const sql = "SELECT * FROM products ORDER BY id DESC";
+// Menggunakan async agar bisa menggunakan await
+app.get('/api/products', async (req, res) => {
+    try {
+        const sql = "SELECT * FROM products ORDER BY id DESC";
 
-    db.query(sql, (err, results) => {
-        if (err) {
-            console.error("Error fetching products:", err);
-            return res.status(500).json({ error: "Gagal mengambil data produk" });
-        }
-        res.json(results);
-    });
+        // 1. Menggunakan db.promise().query() 
+        // Pool akan otomatis memberikan koneksi dan mengembalikannya setelah selesai
+        // Kita menggunakan destructuring [rows] karena mysql2 promise mengembalikan [data, metadata]
+        const [rows] = await db.promise().query(sql);
+
+        // 2. Kirim hasil query ke client
+        res.json(rows);
+
+    } catch (error) {
+        // 3. Error handling jika database sibuk atau terjadi gangguan
+        console.error("Error fetching products:", error.message);
+        res.status(500).json({ 
+            error: "Gagal mengambil data produk",
+            message: error.message 
+        });
+    }
 });
 
 // 2. Hapus Produk (Hanya Admin)
