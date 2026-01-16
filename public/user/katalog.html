@@ -212,7 +212,7 @@
             }
 
             container.innerHTML = products.map(p => {
-                const imagePath = p.foto_produk ? `/uploads/${p.foto_produk}` : 'https://via.placeholder.com/400x300?text=No+Image';
+                const imagePath = p.foto_produk ? p.foto_produk : 'https://via.placeholder.com/400x300?text=No+Image';
                 
                 // Escape string untuk nama agar tidak error jika ada tanda kutip
                 const safeName = p.nama_produk.replace(/'/g, "\\'");
