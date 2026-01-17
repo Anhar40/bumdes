@@ -1386,6 +1386,50 @@ app.post('/api/midtrans/webhook', async (req, res) => {
     }
 });
 
+app.post('/api/payments/midtrans', authenticateToken, async (req, res) => {
+  try {
+    const { amount, keterangan } = req.body;
+    const userId = req.user.id;
+
+    if (!amount || amount < 10000) {
+      return res.status(400).json({ error: "Jumlah tidak valid" });
+    }
+
+    const orderId = `SETOR-${userId}-${Date.now()}`;
+
+    const parameter = {
+      transaction_details: {
+        order_id: orderId,
+        gross_amount: amount
+      },
+      credit_card: {
+        secure: true
+      },
+      item_details: [{
+        id: "SETOR",
+        price: amount,
+        quantity: 1,
+        name: keterangan || "Setoran Simpanan"
+      }],
+      custom_field1: userId,
+      custom_field2: keterangan || "Setoran Simpanan"
+    };
+
+    const transaction = await snap.createTransaction(parameter);
+
+    res.json({
+      snapToken: transaction.token,
+      orderId
+    });
+
+  } catch (err) {
+    console.error("❌ Midtrans Create Error:", err.message);
+    res.status(500).json({ error: "Gagal membuat transaksi Midtrans" });
+  }
+});
+        
+
+
 // Endpoint Laporan Kas (Gaya Callback)
 app.get('/api/admin/laporan-kas', authenticateToken, isAdmin, async (req, res) => {
     try {
