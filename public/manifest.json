@@ -2,7 +2,7 @@
   "name": "BUMDes Digital",
   "short_name": "BUMDes",
   "description": "Aplikasi BUMDes berbasis web",
-  "start_url": "/index.html",
+  "start_url": "/login.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#fefefe",
